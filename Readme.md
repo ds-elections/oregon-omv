@@ -2,7 +2,7 @@
 
 *Rosa Kalish* and *Paul Gronke*
 
-ok hey 
+This project uses the OMV files 
 
 April 2, 2016
 
