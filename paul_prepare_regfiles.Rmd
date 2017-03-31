@@ -1,0 +1,279 @@
+---
+title: "Assignment 2: Oregon_Registration_Create_Tidyfile"
+author: "Paul Gronke"
+date: "February 10, 2017"
+output: html_document
+---
+
+This file reads in the five Oregon voter registration files, binds them together, then selects
+only key data elements, and saves a much smaller file for class use.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+library(car)      # John Fox program for his regression text, nice recode command
+library(rms)      # Frank Harrell regression modeling strategies package
+library(Hmisc)    # Frank Harrell miscellaneous commands package
+library(broom)    # Create "tidy" data frames from statistical results
+library(popbio)   # Matrix population package, has beautiful logit+histogram plot command
+
+```
+
+## Read and bind the files
+
+Read the files from Google Drive, bind them together
+
+```{r file_read, cache = TRUE}
+
+## This directory is on Paul's computer
+
+setwd("~/Google Drive/Teaching/Bray_Gronke_Data_Science/Oregon Voter Files/January 2017/StatewideVoterList_January2017/VoterList_Jan2017")
+filenames <- list.files(pattern = "2017.txt")
+files <- lapply(filenames, read_tsv, col_names=TRUE, 
+                col_types=paste(rep("c",40),collapse=""),
+                trim_ws=TRUE)
+
+or_voter <- bind_rows(files)
+
+## Make this our primary data frame
+or_voter <- as.data.frame(or_voter)
+
+
+```
+
+## Trimming the file
+
+Remove extraneous data elements
+
+```{r trim , cache = TRUE}
+or_voter$CONFIDENTIAL <- as.factor(or_voter$CONFIDENTIAL)
+or_voter$COUNTY <- as.factor(or_voter$COUNTY)
+# or_voter$ZIP_CODE <- as.factor(or_voter$ZIP_CODE)
+or_voter$PARTY_CODE <- as.factor(or_voter$PARTY_CODE)
+or_voter$STATUS <- as.factor(or_voter$STATUS)
+
+str(or_voter)
+
+or_reg_tidyfile <- or_voter %>% select(VOTER_ID, BIRTH_DATE, CONFIDENTIAL, EFF_REGN_DATE, STATUS, PARTY_CODE, COUNTY, ZIP_CODE,PRECINCT_NAME, PRECINCT, SPLIT) %>%
+    filter(VOTER_ID !="ACP")
+str(or_reg_tidyfile)
+
+write_csv(or_reg_tidyfile, "~/Google Drive/Teaching/Bray_Gronke_Data_Science/gronke_data_files/or_reg_tidyfile.csv")
+rm(or_reg)
+
+```
+
+## Read in the Oregon OMV file
+
+Read in the data file that contains information on individuals who were registered automatically
+
+```{r omv_file , cache = TRUE}
+
+setwd("~/Google Drive/Teaching/Bray_Gronke_Data_Science/Oregon Voter Files/January 2017/StatewideVoterList_January2017")
+
+#
+# Couldn't figure out how to deal with this using read_table, it kept choking on the quotations
+#
+
+omv_jan2017 <- read.table("OMV_Jan2017.txt", header = TRUE, skip = 0)
+str(omv_jan2017)
+omv_tidyfile <- omv_jan2017 %>% select(VOTER_ID, DESCRIPTION, COUNTY) %>% filter(VOTER_ID != "ACP")
+str(omv_tidyfile)
+
+write_csv(omv_tidyfile, "~/Google Drive/Teaching/Bray_Gronke_Data_Science/gronke_data_files/omv_tidyfile.csv")
+rm(or_omv)
+
+```
+
+## Read in the Oregon Voter History file
+
+```{r history_file, cache = TRUE}
+
+setwd("~/Google Drive/Teaching/Bray_Gronke_Data_Science/Oregon Voter Files/January 2017/StatewideVoterList_January2017/VoterHistory_Jan2017/")
+
+filenames <- list.files(pattern = "2017.txt")
+files <- lapply(filenames,read_delim, 
+                col_types = paste(rep("c", 65), collapse = ""),
+                delim = "\t", 
+                escape_double = FALSE, 
+                trim_ws = TRUE)
+
+or_history <- bind_rows(files)  %>%
+    select(VOTER_ID, BIRTH_DATE, EFF_REGN_DATE, 41:65) 
+    
+write_csv(or_history, "~/Google Drive/Teaching/Bray_Gronke_Data_Science/gronke_data_files/votehistory_tidyfile.csv")
+rm(files)
+rm(or_history)
+
+```
+
+## Join Step
+
+```{r join_step, cache = TRUE}
+
+or_reg1 <- read_csv("~/Google Drive/Teaching/Bray_Gronke_Data_Science/gronke_data_files/or_reg_tidyfile.csv")
+
+or_omv1 <- read_csv("~/Google Drive/Teaching/Bray_Gronke_Data_Science/gronke_data_files/omv_tidyfile.csv")
+
+or_history1 <- read_csv("~/Google Drive/Teaching/Bray_Gronke_Data_Science/gronke_data_files/votehistory_tidyfile.csv")
+
+or_voter <- or_reg1 %>% 
+  distinct(VOTER_ID, .keep_all = TRUE) %>% 
+  left_join(
+    distinct(or_omv1, VOTER_ID, .keep_all = TRUE),
+    by = "VOTER_ID")
+
+or_voter <- or_voter %>% 
+  left_join(
+    distinct(or_history1, VOTER_ID, .keep_all = TRUE),
+    by = "VOTER_ID")
+
+write_csv(or_voter, "~/Google Drive/Teaching/Bray_Gronke_Data_Science/gronke_data_files/or_voter.csv")
+```
+
+## Recodes
+
+```{r logit, cache = TRUE}
+
+# Create birth date and age variable, remove bad birth years
+
+or_voter <- or_voter %>% mutate(BIRTH_DATE = mdy(BIRTH_DATE.x)) %>% filter(BIRTH_DATE > as_date("1902-1-1"))
+or_voter <- or_voter %>% mutate(age = 2017-year(BIRTH_DATE))
+or_voter <- or_voter %>% mutate(age2014 = 2014-year(BIRTH_DATE))
+
+# Create vote variable November 2016
+table(or_voter$`11/08/2016`)
+or_voter$vote_nov2016 <- ifelse(or_voter$`11/08/2016` == "YES", 1, ifelse(or_voter$`11/08/2016` == "NO", 0, NA))
+table(or_voter$vote_nov2016)
+
+#Create vote variable for November 2014 
+table(or_voter$`11/04/2014`)
+or_voter$vote_nov2014 <- ifelse(or_voter$`11/04/2014` == "YES", 1, ifelse(or_voter$`11/04/2014` == "NO", 0, NA))
+table(or_voter$vote_nov2014)
+
+# Need to have Fox's car package installed to make this command work
+or_voter$newparty1 <- as.factor(recode(or_voter$PARTY_CODE,"'DEM' = 'Democrat'; 'REP' = 'Republican'; 
+                      'NAV' = 'Non-Affiliated' ; else = 'Other'"))
+table(or_voter$newparty1)
+
+```
+
+## Logit Models 2016 election
+
+```{r rms, cache = TRUE}
+
+# Base R results
+
+m1 <- glm(vote_nov2016 ~ age, data = or_voter, family = binomial)
+m2 <- glm(vote_nov2016 ~ age + newparty1, data = or_voter, family = binomial)
+summary(m1)
+coef(m1)
+
+# Prettier results using Broom
+
+tidy(m1)
+glance(m1)
+
+tidy(m2)
+glance(m2)
+
+# Prettier results using rms logistic regression model command
+
+m3 <- lrm(vote_nov2016 ~ age, data=or_voter)
+m3
+
+m4 <- lrm(vote_nov2016 ~ age + newparty1, data=or_voter, penalty=5)
+m4
+
+```
+
+## Logit Models: Examining Effects Using John Fox "effects" package
+
+```{r logit2}
+
+library(effects)
+
+# This allows for easy calculation of marginal effects
+m1.all <- allEffects(m1)
+print(m1.all, digits=3)
+plot(m1.all)
+
+m2.all <- allEffects(m2)
+print(m2.all, digits=3)
+plot(m2.all)
+```
+
+## Make some prediction tables, there must be a better way to do this 
+
+```{r predict}
+
+# Prediction table for party
+predtable <- with(or_voter, data.frame(age=mean(age), newparty1=factor("Democrat", 
+                    "Non-Affiliated", "Republican", "Other")))
+predtable$voteP <- predict(m2, newdata=predtable, type = "response")                 
+predtable
+
+# Prediction table for 18 year olds, by party
+predtable2 <- with(or_voter, data.frame(age=18, newparty1=factor("Democrat", 
+                    "Non-Affiliated", "Republican", "Other")))
+predtable2$voteP <- predict(m2, newdata=predtable2, type = "response")                 
+predtable2
+
+#Prediction table for 65 year olds, by party
+predtable3 <- with(or_voter, data.frame(age=65, newparty1=factor("Democrat", 
+                    "Non-Affiliated", "Republican", "Other")))
+predtable3$voteP <- predict(m2, newdata=predtable3, type = "response")                 
+predtable3
+
+```
+
+
+## Pretty Plot Time 
+
+```{r plots}
+
+# ###############
+# Start with base R plot. This is really slow 
+# #################
+
+plot(or_voter$age, or_voter$vote_nov2016, xlab="Age", ylab = "Voted Nov 2016", 
+      xlim=c(18,100), ylim=c(-0.1, 1.1), mgp=c(2, .5, 0))
+curve(exp(coef(m1)[1] + coef(m1)[2]*x)/(1 + exp(coef(m1)[1] + coef(m1)[2]*x)), add=TRUE)
+
+# ###################################
+# Now plot predicted values directly
+# ##################################
+
+  # Start by setting a range for our predictions
+newdata2 <- with(or_voter, data.frame(age = 18:90))
+  # Put predicted values into this new data frame
+preds <- predict(m1, newdata2, type="response", se.fit = TRUE)
+  # Vector of fitted values
+predf <- preds$fit
+  # Vector of predicted values - 1.96 SE
+lower <- preds$fit - (1.96*preds$se.fit)
+  # Vector of predicted values + 1.96 SE
+upper <- preds$fit + (1.96*preds$se.fit)
+  # Now plot it, start with the plot, then add SE bounds
+plot(18:90, predf, type="l", ylab = "Predicted Probabilty of Voting", xlab = "Age", bty = "n")
+lines(18:90, lower, lty=2)
+lines(18:90, upper, lty=2)
+
+# PopBio Package has a nice canned version of a cool probabilty plot + histogram of values, a
+#   very informative plot
+
+logi.hist.plot(or_voter$age, or_voter$vote_nov2016, boxp=FALSE, type="hist", col="gray")
+```
+
+## Voter turnout in 2014 Midterm election
+
+```{r midterm, cache = TRUE}
+
+m5 <- lrm(vote_nov2014 ~ age, data=or_voter)
+m5
+
+m6 <- lrm(vote_nov2014 ~ age + newparty1, data=or_voter, penalty=5)
+m6
+
+```
