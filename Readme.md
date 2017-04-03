@@ -13,14 +13,21 @@ In evaluating Oregon’s automatic voter registration I also plan to supplement 
 
 My timeline for the project is as follows. 
 
-Week 1 ( April 3- 9): Import and tidy Oregon voter files 
-Week 2 (April 10-17): Compile a review of literature on automatic voting
-Week 3 (April 17- 23): being modeling voter turnout 
-Week 4 (April 24-30): Complete and edit the above work
-Week 5 (May 1-7): Polish code and graphics, begin writing
-Week 6 (May 8-10): Finish writing 
+Week 1 ( April 3- 9): Import and tidy Oregon voter files. 
+
+Week 2 (April 10-17): Compile a review of literature on automatic voting. 
+
+Week 3 (April 17- 23): being modeling voter turnout. 
+
+Week 4 (April 24-30): Complete and edit the above work. 
+
+Week 5 (May 1-7): Polish code and graphics, begin writing. 
+
+Week 6 (May 8-10): Finish writing.
 
 Works Cited: 
+
+
 Automatic Voter Registration. Brennan Center for Justice , New York University . 2017.
 
 Berman, Ari. " Automatic Voter Registration in Oregon Is Revolutionizing American Democracy." The Nation , May 16, 2016. Accessed April 3, 2017.
