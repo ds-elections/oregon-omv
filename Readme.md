@@ -1,6 +1,6 @@
 ## Oregon Motor Voter Project
 
-*Rosa Kalish* and *Paul Gronke*
+*Rosa Kalish* 
 
 Project Proposal   	
 					
@@ -15,11 +15,11 @@ My timeline for the project is as follows.
 
 Week 1 ( April 3- 9): Import and tidy Oregon voter files. 
 
-Week 2 (April 10-17): Compile a review of literature on automatic voting. 
+Week 2 (April 10-17): Import geographical data and being modeling. 
 
-Week 3 (April 17- 23): being modeling voter turnout. 
+Week 3 (April 17- 23): Complete modeling and create graphics. 
 
-Week 4 (April 24-30): Complete and edit the above work. 
+Week 4 (April 24-30): Collect literature on voter registration. 
 
 Week 5 (May 1-7): Polish code and graphics, begin writing. 
 
