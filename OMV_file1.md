@@ -326,6 +326,19 @@ Tidy Vote FIle
 voter_or <- voter_all %>%
   select(VOTER_ID, FIRST_NAME, LAST_NAME, COUNTY, CITY, BIRTH_DATE, STATUS, PARTY_CODE, RES_ADDRESS_1, PRECINCT_NAME, PRECINCT, ZIP_CODE) 
 ```
+Import Geographic dta 
 
-OK so how do I know who was registered through OMV? 
-How should I tidy the spatial file 
+```r
+#file.choose()
+geo <- read_csv("/Users/rosa/Desktop/socialexplorer-zipcode.csv")
+voter_geo <- inner_join(voter_or, spatial) 
+by COUNTY
+```
+
+```
+## Error: <text>:4:4: unexpected symbol
+## 3: voter_geo <- inner_join(voter_or, spatial) 
+## 4: by COUNTY
+##       ^
+```
+
