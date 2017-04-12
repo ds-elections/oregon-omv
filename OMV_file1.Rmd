@@ -44,3 +44,16 @@ voter_geo <- inner_join(voter_or, spatial)
 by COUNTY
 ```
 
+```{r}
+voter_or2 <- voter_or %>%
+  mutate(COUNTY = tolower(COUNTY))
+spatial2 <- spatial %>%
+  mutate(COUNTY = tolower(COUNTY))
+join <- inner_join(voter_or2, spatial2, by = "COUNTY")
+```
+
+```{r}
+voter_or %>% count(COUNTY)
+voter_or %>% count(COUNTY, PARTY_CODE)
+```
+What info is in the voter_all and voter_or files, what should I be looking at and how should I tidy? 

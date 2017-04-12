@@ -342,3 +342,57 @@ by COUNTY
 ##       ^
 ```
 
+
+```r
+voter_or2 <- voter_or %>%
+  mutate(COUNTY = tolower(COUNTY))
+spatial2 <- spatial %>%
+  mutate(COUNTY = tolower(COUNTY))
+join <- inner_join(voter_or2, spatial2, by = "COUNTY")
+```
+
+
+```r
+voter_or %>% count(COUNTY)
+```
+
+```
+## # A tibble: 37 × 2
+##       COUNTY      n
+##        <chr>  <int>
+## 1        ACP    130
+## 2      BAKER  13445
+## 3     BENTON  64437
+## 4  CLACKAMAS 310093
+## 5    CLATSOP  30670
+## 6   COLUMBIA  39100
+## 7       COOS  46452
+## 8      CROOK  17841
+## 9      CURRY  18004
+## 10 DESCHUTES 143677
+## # ... with 27 more rows
+```
+
+```r
+voter_or %>% count(COUNTY, PARTY_CODE)
+```
+
+```
+## Source: local data frame [375 x 3]
+## Groups: COUNTY [?]
+## 
+##    COUNTY PARTY_CODE     n
+##     <chr>      <chr> <int>
+## 1     ACP        ACP   130
+## 2   BAKER        CON    39
+## 3   BAKER        DEM  2588
+## 4   BAKER        IND   697
+## 5   BAKER        LBT    86
+## 6   BAKER        NAV  3750
+## 7   BAKER        OTH    47
+## 8   BAKER        PGP    45
+## 9   BAKER        PRO     2
+## 10  BAKER        REP  6161
+## # ... with 365 more rows
+```
+What info is in the voter_all and voter_or files, what should I be looking at and how should I tidy? 
