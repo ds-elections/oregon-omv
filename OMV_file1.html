@@ -248,11 +248,144 @@ author: &ldquo;RosaKalish&rdquo;</p>
 
 <pre><code class="r">library(broom)    # Create &quot;tidy&quot; data frames from statistical results
 library(popbio)   # Matrix population package, has beautiful logit+histogram plot command
+library(tidyverse)
+library(data.table)
+</code></pre>
+
+<pre><code>## Error in library(data.table): there is no package called &#39;data.table&#39;
 </code></pre>
 
 <p>Import and Bind </p>
 
-<pre><code class="r">#file.choose()
+<pre><code class="r">voterfull &lt;- read_tsv(&#39;https://www.dropbox.com/s/khywm89j8myn5t0/or_voter_history.zip?dl=0&#39;)
+</code></pre>
+
+<pre><code>## Parsed with column specification:
+## cols(
+##   `&lt;!DOCTYPE html&gt;&lt;html lang=&quot;en&quot; xmlns:fb=&quot;http://ogp.me/ns/fb#&quot; xml:lang=&quot;en&quot; class=&quot;maestro&quot; xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;` = col_character()
+## )
+</code></pre>
+
+<pre><code class="r">file.choose()
+</code></pre>
+
+<pre><code>## Error in file.choose(): file choice cancelled
+</code></pre>
+
+<pre><code class="r">votern1 &lt;- read_tsv(&quot;/Users/rosa/Desktop/or_voter_history/CD1_VoterHistory_Jan2017.txt&quot;)
+</code></pre>
+
+<pre><code>## Parsed with column specification:
+## cols(
+##   .default = col_character(),
+##   VOTER_ID = col_integer(),
+##   HOUSE_NUM = col_integer(),
+##   ZIP_CODE = col_integer(),
+##   ZIP_PLUS_FOUR = col_integer(),
+##   EFF_ZIP_CODE = col_integer()
+## )
+</code></pre>
+
+<pre><code>## See spec(...) for full column specifications.
+</code></pre>
+
+<pre><code>## Warning: 813 parsing failures.
+##  row           col   expected   actual
+## 1157 HOUSE_NUM     an integer XXXXXXXX
+## 1157 ZIP_CODE      an integer XXXXXXXX
+## 1157 ZIP_PLUS_FOUR an integer XXXXXXXX
+## 1552 HOUSE_NUM     an integer XXXXXXXX
+## 1552 ZIP_CODE      an integer XXXXXXXX
+## .... ............. .......... ........
+## See problems(...) for more details.
+</code></pre>
+
+<pre><code class="r">votern2 &lt;- read_tsv(&quot;/Users/rosa/Desktop/or_voter_history/CD2_VoterHistory_Jan2017.txt&quot;)
+</code></pre>
+
+<pre><code>## Parsed with column specification:
+## cols(
+##   .default = col_character(),
+##   VOTER_ID = col_integer(),
+##   SPLIT = col_integer()
+## )
+## See spec(...) for full column specifications.
+</code></pre>
+
+<pre><code>## Warning: 47880 parsing failures.
+##    row   col               expected actual
+## 220875 SPLIT no trailing characters      A
+## 221380 SPLIT no trailing characters      A
+## 221474 SPLIT no trailing characters      A
+## 222477 SPLIT no trailing characters      A
+## 222880 SPLIT no trailing characters      A
+## ...... ..... ...................... ......
+## See problems(...) for more details.
+</code></pre>
+
+<pre><code class="r">votern3 &lt;- read_tsv(&quot;/Users/rosa/Desktop/or_voter_history/CD3_VoterHistory_Jan2017.txt&quot;)
+</code></pre>
+
+<pre><code>## Parsed with column specification:
+## cols(
+##   .default = col_character(),
+##   VOTER_ID = col_integer(),
+##   EFF_ZIP_CODE = col_integer(),
+##   EFF_ZIP_PLUS_FOUR = col_integer()
+## )
+## See spec(...) for full column specifications.
+</code></pre>
+
+<pre><code>## Warning: 150 parsing failures.
+##   row               col   expected actual
+##  1739 VOTER_ID          an integer    ACP
+##  1739 EFF_ZIP_CODE      an integer    ACP
+##  1739 EFF_ZIP_PLUS_FOUR an integer    ACP
+## 35253 VOTER_ID          an integer    ACP
+## 35253 EFF_ZIP_CODE      an integer    ACP
+## ..... ................. .......... ......
+## See problems(...) for more details.
+</code></pre>
+
+<pre><code class="r">votern4 &lt;- read_tsv(&quot;/Users/rosa/Desktop/or_voter_history/CD4_VoterHistory_Jan2017.txt&quot;)
+</code></pre>
+
+<pre><code>## Parsed with column specification:
+## cols(
+##   .default = col_character(),
+##   VOTER_ID = col_integer(),
+##   HOUSE_NUM = col_integer(),
+##   ZIP_CODE = col_integer(),
+##   ZIP_PLUS_FOUR = col_integer(),
+##   EFF_ZIP_CODE = col_integer()
+## )
+## See spec(...) for full column specifications.
+</code></pre>
+
+<pre><code>## Warning: 975 parsing failures.
+##  row           col   expected   actual
+## 1125 HOUSE_NUM     an integer XXXXXXXX
+## 1125 ZIP_CODE      an integer XXXXXXXX
+## 1125 ZIP_PLUS_FOUR an integer XXXXXXXX
+## 5192 HOUSE_NUM     an integer XXXXXXXX
+## 5192 ZIP_CODE      an integer XXXXXXXX
+## .... ............. .......... ........
+## See problems(...) for more details.
+</code></pre>
+
+<pre><code class="r">votern5 &lt;- read_tsv(&quot;/Users/rosa/Desktop/or_voter_history/CD5_VoterHistory_Jan2017.txt&quot;)
+</code></pre>
+
+<pre><code>## Parsed with column specification:
+## cols(
+##   .default = col_character(),
+##   VOTER_ID = col_integer()
+## )
+## See spec(...) for full column specifications.
+</code></pre>
+
+<pre><code class="r">votern_all &lt;- rbind(votern1, votern2, votern3, votern4, votern5)
+---------
 voter1 &lt;- read_tsv(&quot;/Users/rosa/Documents/OMV project/data /CD1_VoterList_Jan2017.txt&quot;)
 </code></pre>
 
@@ -267,9 +400,7 @@ voter1 &lt;- read_tsv(&quot;/Users/rosa/Documents/OMV project/data /CD1_VoterLis
 ##   ZIP_CODE = col_integer(),
 ##   ZIP_PLUS_FOUR = col_integer()
 ## )
-</code></pre>
-
-<pre><code>## See spec(...) for full column specifications.
+## See spec(...) for full column specifications.
 </code></pre>
 
 <pre><code>## Warning: 590173 parsing failures.
@@ -281,6 +412,9 @@ voter1 &lt;- read_tsv(&quot;/Users/rosa/Documents/OMV project/data /CD1_VoterLis
 ##   5  -- 41 columns 40 columns
 ## ... ... .......... ..........
 ## See problems(...) for more details.
+</code></pre>
+
+<pre><code>## Error in ---------voter1 &lt;- read_tsv(&quot;/Users/rosa/Documents/OMV project/data /CD1_VoterList_Jan2017.txt&quot;): object &#39;voter1&#39; not found
 </code></pre>
 
 <pre><code class="r">voter2 &lt;- read_tsv(&quot;/Users/rosa/Documents/OMV project/data /CD2_VoterList_Jan2017.txt&quot;)
@@ -393,29 +527,15 @@ voter1 &lt;- read_tsv(&quot;/Users/rosa/Documents/OMV project/data /CD1_VoterLis
 </code></pre>
 
 <pre><code class="r">voter_all &lt;- rbind(voter1, voter2, voter3, voter4, voter5)
-head(voter_all) 
 </code></pre>
 
-<pre><code>## # A tibble: 6 × 41
-##    VOTER_ID FIRST_NAME MIDDLE_NAME LAST_NAME NAME_SUFFIX BIRTH_DATE
-##       &lt;int&gt;      &lt;chr&gt;       &lt;chr&gt;     &lt;chr&gt;       &lt;chr&gt;      &lt;chr&gt;
-## 1 100743763   CAROLINE      AMANDA    ABBOTT        &lt;NA&gt; 07-15-1966
-## 2 100743762       JOHN        ERIC    ABBOTT        &lt;NA&gt; 02-17-1965
-## 3 100783979   NICHOLAS    ALASDAIR    ABBOTT        &lt;NA&gt; 04-19-1997
-## 4 100505034   ADRIANNA   CHRISTINA      ABEL        &lt;NA&gt; 10-04-1991
-## 5  11905738      WENDY        &lt;NA&gt;   ABRAHAM        &lt;NA&gt; 01-21-1974
-## 6  16765525    DEBORAH           J    ABRAMS        &lt;NA&gt; 08-18-1948
-## # ... with 35 more variables: CONFIDENTIAL &lt;chr&gt;, EFF_REGN_DATE &lt;chr&gt;,
-## #   STATUS &lt;chr&gt;, PARTY_CODE &lt;chr&gt;, PHONE_NUM &lt;chr&gt;, UNLISTED &lt;chr&gt;,
-## #   COUNTY &lt;chr&gt;, RES_ADDRESS_1 &lt;chr&gt;, RES_ADDRESS_2 &lt;chr&gt;,
-## #   HOUSE_NUM &lt;chr&gt;, HOUSE_SUFFIX &lt;chr&gt;, PRE_DIRECTION &lt;chr&gt;,
-## #   STREET_NAME &lt;chr&gt;, STREET_TYPE &lt;chr&gt;, POST_DIRECTION &lt;chr&gt;,
-## #   UNIT_TYPE &lt;chr&gt;, UNIT_NUM &lt;chr&gt;, ADDR_NON_STD &lt;chr&gt;, CITY &lt;chr&gt;,
-## #   STATE &lt;chr&gt;, ZIP_CODE &lt;chr&gt;, ZIP_PLUS_FOUR &lt;chr&gt;, EFF_ADDRESS_1 &lt;chr&gt;,
-## #   EFF_ADDRESS_2 &lt;chr&gt;, EFF_ADDRESS_3 &lt;chr&gt;, EFF_ADDRESS_4 &lt;chr&gt;,
-## #   EFF_CITY &lt;chr&gt;, EFF_STATE &lt;chr&gt;, EFF_ZIP_CODE &lt;chr&gt;,
-## #   EFF_ZIP_PLUS_FOUR &lt;chr&gt;, ABSENTEE_TYPE &lt;chr&gt;, PRECINCT_NAME &lt;chr&gt;,
-## #   PRECINCT &lt;chr&gt;, SPLIT &lt;chr&gt;, X41 &lt;chr&gt;
+<pre><code>## Error in rbind(voter1, voter2, voter3, voter4, voter5): object &#39;voter1&#39; not found
+</code></pre>
+
+<pre><code class="r">head(voter_all) 
+</code></pre>
+
+<pre><code>## Error in head(voter_all): object &#39;voter_all&#39; not found
 </code></pre>
 
 <pre><code class="r">#file.choose()
@@ -460,8 +580,16 @@ spatial &lt;- read_csv(&quot;/Users/rosa/Downloads/SPATIAL_INFO.csv&quot;)
 
 <p>Tidy Vote FIle </p>
 
-<pre><code class="r">voter_or &lt;- voter_all %&gt;%
-  select(VOTER_ID, FIRST_NAME, LAST_NAME, COUNTY, CITY, BIRTH_DATE, STATUS, PARTY_CODE, RES_ADDRESS_1, PRECINCT_NAME, PRECINCT, ZIP_CODE) 
+<pre><code class="r">votern_or &lt;- votern_all %&gt;%
+  select(VOTER_ID, FIRST_NAME, LAST_NAME, COUNTY, CITY, BIRTH_DATE, STATUS, PARTY_CODE, RES_ADDRESS_1, PRECINCT_NAME, PRECINCT, ZIP_CODE, 11/08/2016)
+
+         11/08/2016) 
+</code></pre>
+
+<pre><code>## Error: &lt;text&gt;:4:20: unexpected &#39;)&#39;
+## 3:          
+## 4:          11/08/2016)
+##                       ^
 </code></pre>
 
 <p>Import Geographic dta </p>
@@ -480,49 +608,29 @@ by COUNTY
 
 <pre><code class="r">voter_or2 &lt;- voter_or %&gt;%
   mutate(COUNTY = tolower(COUNTY))
-spatial2 &lt;- spatial %&gt;%
+</code></pre>
+
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;voter_or&#39; not found
+</code></pre>
+
+<pre><code class="r">spatial2 &lt;- spatial %&gt;%
   mutate(COUNTY = tolower(COUNTY))
 join &lt;- inner_join(voter_or2, spatial2, by = &quot;COUNTY&quot;)
+</code></pre>
+
+<pre><code>## Error in inner_join(voter_or2, spatial2, by = &quot;COUNTY&quot;): object &#39;voter_or2&#39; not found
 </code></pre>
 
 <pre><code class="r">voter_or %&gt;% count(COUNTY)
 </code></pre>
 
-<pre><code>## # A tibble: 37 × 2
-##       COUNTY      n
-##        &lt;chr&gt;  &lt;int&gt;
-## 1        ACP    130
-## 2      BAKER  13445
-## 3     BENTON  64437
-## 4  CLACKAMAS 310093
-## 5    CLATSOP  30670
-## 6   COLUMBIA  39100
-## 7       COOS  46452
-## 8      CROOK  17841
-## 9      CURRY  18004
-## 10 DESCHUTES 143677
-## # ... with 27 more rows
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;voter_or&#39; not found
 </code></pre>
 
 <pre><code class="r">voter_or %&gt;% count(COUNTY, PARTY_CODE)
 </code></pre>
 
-<pre><code>## Source: local data frame [375 x 3]
-## Groups: COUNTY [?]
-## 
-##    COUNTY PARTY_CODE     n
-##     &lt;chr&gt;      &lt;chr&gt; &lt;int&gt;
-## 1     ACP        ACP   130
-## 2   BAKER        CON    39
-## 3   BAKER        DEM  2588
-## 4   BAKER        IND   697
-## 5   BAKER        LBT    86
-## 6   BAKER        NAV  3750
-## 7   BAKER        OTH    47
-## 8   BAKER        PGP    45
-## 9   BAKER        PRO     2
-## 10  BAKER        REP  6161
-## # ... with 365 more rows
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;voter_or&#39; not found
 </code></pre>
 
 <p>What info is in the voter_all and voter_or files, what should I be looking at and how should I tidy? </p>
