@@ -90,8 +90,12 @@ join <- inner_join(votern_all2, county2, by = "COUNTY")
 ```
 Visualize 
 ```{r}
-#ggplot(join, aes(x= PopWhite))+
-#facet_grid(.~COUNTY)
+ggplot(county, aes(x= TotalPopRace, y= PopWhite))+
+  geom_line()
+
+ggplot(county, aes(x= PopWhite))+
+  geom_bar()+ 
+  facet_grid(.~COUNTY)
  
 
 ```
