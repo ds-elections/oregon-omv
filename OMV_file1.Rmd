@@ -18,9 +18,13 @@ library(data.table)
 
 ```{r}
 ```
-Import and Bind 
+Import and Bind Voter Data 
 ```{r}
+#This link attempts to make the data importable to anyone, however I can not get it to work 
+
 voterfull <- read_tsv('https://www.dropbox.com/s/khywm89j8myn5t0/or_voter_history.zip?dl=0')
+
+#These are the files with correct voting turnout data, however they are still missing registration type, I am not sure where to find that 
 
 file.choose()
 votern1 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD1_VoterHistory_Jan2017.txt")
@@ -31,6 +35,8 @@ votern5 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD5_VoterHistory_Jan20
 
 votern_all <- rbind(votern1, votern2, votern3, votern4, votern5)
 ---------
+#These are the voter files I downloaded from Pauls google drive, tho they do not seem to have all the information that I need. 
+  
 voter1 <- read_tsv("/Users/rosa/Documents/OMV project/data /CD1_VoterList_Jan2017.txt")
 voter2 <- read_tsv("/Users/rosa/Documents/OMV project/data /CD2_VoterList_Jan2017.txt")
 voter3 <- read_tsv("/Users/rosa/Documents/OMV project/data /CD3_VoterList_Jan2017.txt")
@@ -40,34 +46,53 @@ voter5 <- read_tsv("/Users/rosa/Documents/OMV project/data /CD5_VoterList_Jan201
 voter_all <- rbind(voter1, voter2, voter3, voter4, voter5)
 head(voter_all) 
 
-#file.choose()
-spatial <- read_csv("/Users/rosa/Downloads/SPATIAL_INFO.csv")
 ```
-Tidy Vote FIle 
+Tidy Vote File 
 ```{r}
+#Here I select the columns I need. I would like to select the "11/08/2016" file but it will not let me, I think becuase the title is numeric. 
 votern_or <- votern_all %>%
-  select(VOTER_ID, FIRST_NAME, LAST_NAME, COUNTY, CITY, BIRTH_DATE, STATUS, PARTY_CODE, RES_ADDRESS_1, PRECINCT_NAME, PRECINCT, ZIP_CODE, 11/08/2016)
-         
-         11/08/2016) 
+  select(VOTER_ID, FIRST_NAME, LAST_NAME, COUNTY, CITY, BIRTH_DATE, STATUS, PARTY_CODE, RES_ADDRESS_1, PRECINCT_NAME, PRECINCT, ZIP_CODE)
+
+# Exluding 11/08/2016 
 ```
-Import Geographic dta 
+Import Geographic Data
 ```{r}
+#I first import Census tract data, then State Legislative district, then County. 
 #file.choose()
-geo <- read_csv("/Users/rosa/Desktop/socialexplorer-zipcode.csv")
-voter_geo <- inner_join(voter_or, spatial) 
-by COUNTY
+census <- read_csv("/Users/rosa/Desktop/SEcensus.csv")
+
+#file.choose()
+stateleg <- read_csv("/Users/rosa/Desktop/SEstateleg.csv")
+
+#file.choose()
+county <- read_csv("/Users/rosa/Desktop/SEcounty.csv")
+
+```
+Tidy Geographic Data 
+```{r}
+#Here I would like to seperate the columns into ones with County and tract in seperate columns, but I am not sure how to do that. 
+
+#censust <- census %>%
+  #select(Geo_NAME, Geo_COUNTY)
+
 ```
 
+ County Join 
 ```{r}
-voter_or2 <- voter_or %>%
+votern_all2 <- votern_all %>%
   mutate(COUNTY = tolower(COUNTY))
-spatial2 <- spatial %>%
+county2 <- county %>%
   mutate(COUNTY = tolower(COUNTY))
-join <- inner_join(voter_or2, spatial2, by = "COUNTY")
+join <- inner_join(votern_all2, county2, by = "COUNTY")
+
+#voter_or %>% count(COUNTY)
+#voter_or %>% count(COUNTY, PARTY_CODE)
+```
+Visualize 
+```{r}
+#ggplot(join, aes(x= PopWhite))+
+#facet_grid(.~COUNTY)
+ 
+
 ```
 
-```{r}
-voter_or %>% count(COUNTY)
-voter_or %>% count(COUNTY, PARTY_CODE)
-```
-What info is in the voter_all and voter_or files, what should I be looking at and how should I tidy? 

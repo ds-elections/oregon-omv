@@ -93,9 +93,11 @@ library(data.table)
 ## Error in library(data.table): there is no package called 'data.table'
 ```
 
-Import and Bind 
+Import and Bind Voter Data 
 
 ```r
+#This link attempts to make the data importable to anyone, however I can not get it to work 
+
 voterfull <- read_tsv('https://www.dropbox.com/s/khywm89j8myn5t0/or_voter_history.zip?dl=0')
 ```
 
@@ -107,6 +109,8 @@ voterfull <- read_tsv('https://www.dropbox.com/s/khywm89j8myn5t0/or_voter_histor
 ```
 
 ```r
+#These are the files with correct voting turnout data, however they are still missing registration type, I am not sure where to find that 
+
 file.choose()
 ```
 
@@ -244,6 +248,8 @@ votern5 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD5_VoterHistory_Jan20
 ```r
 votern_all <- rbind(votern1, votern2, votern3, votern4, votern5)
 ---------
+#These are the voter files I downloaded from Pauls google drive, tho they do not seem to have all the information that I need. 
+  
 voter1 <- read_tsv("/Users/rosa/Documents/OMV project/data /CD1_VoterList_Jan2017.txt")
 ```
 
@@ -419,114 +425,147 @@ head(voter_all)
 ```
 ## Error in head(voter_all): object 'voter_all' not found
 ```
+Tidy Vote File 
 
 ```r
-#file.choose()
-spatial <- read_csv("/Users/rosa/Downloads/SPATIAL_INFO.csv")
-```
+#Here I select the columns I need. I would like to select the "11/08/2016" file but it will not let me, I think becuase the title is numeric. 
+votern_or <- votern_all %>%
+  select(VOTER_ID, FIRST_NAME, LAST_NAME, COUNTY, CITY, BIRTH_DATE, STATUS, PARTY_CODE, RES_ADDRESS_1, PRECINCT_NAME, PRECINCT, ZIP_CODE)
 
+# Exluding 11/08/2016 
 ```
-## Warning: Missing column names filled in: 'X66' [66], 'X67' [67],
-## 'X68' [68], 'X69' [69], 'X70' [70], 'X71' [71], 'X72' [72], 'X73' [73],
-## 'X74' [74], 'X75' [75], 'X76' [76], 'X77' [77], 'X78' [78], 'X79' [79],
-## 'X80' [80], 'X81' [81], 'X82' [82], 'X83' [83], 'X84' [84], 'X85' [85],
-## 'X86' [86], 'X87' [87], 'X88' [88], 'X89' [89], 'X90' [90], 'X91' [91],
-## 'X92' [92], 'X93' [93], 'X94' [94], 'X95' [95]
+Import Geographic Data
+
+```r
+#I first import Census tract data, then State Legislative district, then County. 
+#file.choose()
+census <- read_csv("/Users/rosa/Desktop/SEcensus.csv")
 ```
 
 ```
 ## Parsed with column specification:
 ## cols(
 ##   .default = col_character(),
-##   X66 = col_integer(),
-##   X67 = col_integer(),
-##   X68 = col_integer(),
-##   X69 = col_double(),
-##   X70 = col_double(),
-##   X71 = col_double(),
-##   X72 = col_double(),
-##   X73 = col_double(),
-##   X74 = col_double(),
-##   X75 = col_double(),
-##   X76 = col_double(),
-##   X77 = col_double(),
-##   X78 = col_double(),
-##   X79 = col_double(),
-##   X80 = col_double(),
-##   X81 = col_integer(),
-##   X82 = col_integer(),
-##   X83 = col_integer(),
-##   X84 = col_integer(),
-##   X85 = col_integer()
-##   # ... with 10 more columns
+##   Geo_FIPS = col_double(),
+##   Geo_SUMLEV = col_integer(),
+##   Geo_STATE = col_integer(),
+##   SE_T004_001 = col_integer(),
+##   SE_T004_002 = col_integer(),
+##   SE_T004_003 = col_integer(),
+##   SE_T007_001 = col_integer(),
+##   SE_T007_002 = col_integer(),
+##   SE_T007_003 = col_integer(),
+##   SE_T007_004 = col_integer(),
+##   SE_T007_005 = col_integer(),
+##   SE_T007_006 = col_integer(),
+##   SE_T007_007 = col_integer(),
+##   SE_T007_008 = col_integer(),
+##   SE_T007_009 = col_integer(),
+##   SE_T007_010 = col_integer(),
+##   SE_T007_011 = col_integer(),
+##   SE_T007_012 = col_integer(),
+##   SE_T007_013 = col_integer(),
+##   SE_T013_001 = col_integer()
+##   # ... with 8 more columns
 ## )
+```
+
+```
 ## See spec(...) for full column specifications.
 ```
-Tidy Vote FIle 
-
-```r
-votern_or <- votern_all %>%
-  select(VOTER_ID, FIRST_NAME, LAST_NAME, COUNTY, CITY, BIRTH_DATE, STATUS, PARTY_CODE, RES_ADDRESS_1, PRECINCT_NAME, PRECINCT, ZIP_CODE, 11/08/2016)
-         
-         11/08/2016) 
-```
-
-```
-## Error: <text>:4:20: unexpected ')'
-## 3:          
-## 4:          11/08/2016)
-##                       ^
-```
-Import Geographic dta 
 
 ```r
 #file.choose()
-geo <- read_csv("/Users/rosa/Desktop/socialexplorer-zipcode.csv")
-voter_geo <- inner_join(voter_or, spatial) 
-by COUNTY
+stateleg <- read_csv("/Users/rosa/Desktop/SEstateleg.csv")
 ```
 
 ```
-## Error: <text>:4:4: unexpected symbol
-## 3: voter_geo <- inner_join(voter_or, spatial) 
-## 4: by COUNTY
-##       ^
+## Parsed with column specification:
+## cols(
+##   .default = col_character(),
+##   Geo_FIPS = col_integer(),
+##   Geo_SUMLEV = col_integer(),
+##   Geo_STATE = col_integer(),
+##   SE_T004_001 = col_integer(),
+##   SE_T004_002 = col_integer(),
+##   SE_T004_003 = col_integer(),
+##   SE_T007_001 = col_integer(),
+##   SE_T007_002 = col_integer(),
+##   SE_T007_003 = col_integer(),
+##   SE_T007_004 = col_integer(),
+##   SE_T007_005 = col_integer(),
+##   SE_T007_006 = col_integer(),
+##   SE_T007_007 = col_integer(),
+##   SE_T007_008 = col_integer(),
+##   SE_T007_009 = col_integer(),
+##   SE_T007_010 = col_integer(),
+##   SE_T007_011 = col_integer(),
+##   SE_T007_012 = col_integer(),
+##   SE_T007_013 = col_integer(),
+##   SE_T013_001 = col_integer()
+##   # ... with 8 more columns
+## )
+## See spec(...) for full column specifications.
 ```
-
 
 ```r
-voter_or2 <- voter_or %>%
+#file.choose()
+county <- read_csv("/Users/rosa/Desktop/SEcounty.csv")
+```
+
+```
+## Parsed with column specification:
+## cols(
+##   .default = col_character(),
+##   Geo_FIPS = col_integer(),
+##   Geo_SUMLEV = col_integer(),
+##   Geo_GEOCOMP = col_integer(),
+##   Geo_LOGRECNO = col_integer(),
+##   Geo_STATE = col_integer(),
+##   Geo_COUNTY = col_integer(),
+##   TotalPopSex = col_integer(),
+##   PopMale = col_integer(),
+##   PopFemale = col_integer(),
+##   TotalPopAge = col_integer(),
+##   PopFive = col_integer(),
+##   PopNine = col_integer(),
+##   PopFourteen = col_integer(),
+##   PopSeventeen = col_integer(),
+##   PopTwentyfour = col_integer(),
+##   PopThirtyfour = col_integer(),
+##   PopFortyfour = col_integer(),
+##   PopFiftyfour = col_integer(),
+##   PopSixtyfour = col_integer(),
+##   PopSeventyfour = col_integer()
+##   # ... with 11 more columns
+## )
+## See spec(...) for full column specifications.
+```
+Tidy Geographic Data 
+
+```r
+#Here I would like to seperate the columns into ones with County and tract in seperate columns, but I am not sure how to do that. 
+
+#censust <- census %>%
+  #select(Geo_NAME, Geo_COUNTY)
+```
+
+ County Join 
+
+```r
+votern_all2 <- votern_all %>%
   mutate(COUNTY = tolower(COUNTY))
-```
-
-```
-## Error in eval(expr, envir, enclos): object 'voter_or' not found
-```
-
-```r
-spatial2 <- spatial %>%
+county2 <- county %>%
   mutate(COUNTY = tolower(COUNTY))
-join <- inner_join(voter_or2, spatial2, by = "COUNTY")
-```
+join <- inner_join(votern_all2, county2, by = "COUNTY")
 
+#voter_or %>% count(COUNTY)
+#voter_or %>% count(COUNTY, PARTY_CODE)
 ```
-## Error in inner_join(voter_or2, spatial2, by = "COUNTY"): object 'voter_or2' not found
-```
-
-
-```r
-voter_or %>% count(COUNTY)
-```
-
-```
-## Error in eval(expr, envir, enclos): object 'voter_or' not found
-```
+Visualize 
 
 ```r
-voter_or %>% count(COUNTY, PARTY_CODE)
+#ggplot(join, aes(x= PopWhite))+
+#facet_grid(.~COUNTY)
 ```
 
-```
-## Error in eval(expr, envir, enclos): object 'voter_or' not found
-```
-What info is in the voter_all and voter_or files, what should I be looking at and how should I tidy? 
