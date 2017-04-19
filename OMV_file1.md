@@ -93,6 +93,10 @@ library(data.table)
 ## Error in library(data.table): there is no package called 'data.table'
 ```
 
+```r
+library(stringr)
+```
+
 Import and Bind Voter Data 
 
 ```r
@@ -541,6 +545,87 @@ county <- read_csv("/Users/rosa/Desktop/SEcounty.csv")
 ## )
 ## See spec(...) for full column specifications.
 ```
+
+```r
+#file.choose()
+zipcode <- read_csv("/Users/rosa/Desktop/zipcode.csv") %>%
+  mutate(Geo_NAME = str_replace_all(Geo_NAME, pattern = "ZCTA5 ", replacement = ""))
+```
+
+```
+## Parsed with column specification:
+## cols(
+##   Geo_NAME = col_character(),
+##   Geo_QName = col_character(),
+##   Geo_AREALAND = col_double(),
+##   Geo_AREAWATR = col_integer(),
+##   Geo_SUMLEV = col_integer(),
+##   Geo_GEOCOMP = col_character(),
+##   Geo_FIPS = col_integer(),
+##   SE_T003_001 = col_integer(),
+##   SE_T003_002 = col_integer(),
+##   SE_T003_003 = col_integer(),
+##   SE_T054_001 = col_integer(),
+##   SE_T054_002 = col_integer(),
+##   SE_T054_003 = col_integer(),
+##   SE_T054_004 = col_integer(),
+##   SE_T054_005 = col_integer(),
+##   SE_T054_006 = col_integer(),
+##   SE_T054_007 = col_integer(),
+##   SE_T054_008 = col_integer()
+## )
+```
+
+```r
+# Make note of which zips have "(part)" - For later
+part_zips <- zipcode %>%
+  filter(grepl("part", Geo_NAME))
+
+# Clear those out
+zipcode <- zipcode %>%
+    mutate(Geo_NAME = substr(Geo_NAME, 1, 5)) %>%
+  rename(total_pop = SE_T003_001,
+         male = SE_T003_002,
+         female = SE_T003_003)
+
+# Just sex
+sex <- zipcode %>%
+  select(Geo_NAME, total_pop, male, female)
+```
+
+Get at zip code level for Oregon registered voters
+
+
+```r
+total_regs <- votern_all %>%
+  group_by(ZIP_CODE) %>%
+  summarize(count = n())
+```
+
+Proportion of registered that voted on Nov 2016
+
+
+```r
+prop_voted16 <- votern_all %>%
+  group_by(ZIP_CODE) %>%
+  summarize(prop_voted = mean(`11/08/2016` == "YES"))
+```
+
+Put them together
+
+
+```r
+zipcode_data <- inner_join(x = total_regs,
+                           y = prop_voted16,
+                           by = "ZIP_CODE")
+
+# Join with voter reg aggregated data
+sex_reg <- inner_join(x = sex, y = zipcode_data, 
+                      by = c("Geo_NAME" = "ZIP_CODE"))
+```
+
+
+
 Tidy Geographic Data 
 
 ```r
@@ -569,7 +654,7 @@ ggplot(county, aes(x= TotalPopRace, y= PopWhite))+
   geom_line()
 ```
 
-![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png)
+![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-1.png)
 
 ```r
 ggplot(county, aes(x= PopWhite))+
@@ -577,5 +662,5 @@ ggplot(county, aes(x= PopWhite))+
   facet_grid(.~COUNTY)
 ```
 
-![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-2.png)
+![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-2.png)
 

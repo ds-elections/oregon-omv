@@ -14,7 +14,7 @@ library(broom)    # Create "tidy" data frames from statistical results
 library(popbio)   # Matrix population package, has beautiful logit+histogram plot command
 library(tidyverse)
 library(data.table)
-
+library(stringr)
 
 ```{r}
 ```
@@ -67,7 +67,58 @@ stateleg <- read_csv("/Users/rosa/Desktop/SEstateleg.csv")
 #file.choose()
 county <- read_csv("/Users/rosa/Desktop/SEcounty.csv")
 
+#file.choose()
+zipcode <- read_csv("/Users/rosa/Desktop/zipcode.csv") %>%
+  mutate(Geo_NAME = str_replace_all(Geo_NAME, pattern = "ZCTA5 ", replacement = ""))
+
+# Make note of which zips have "(part)" - For later
+part_zips <- zipcode %>%
+  filter(grepl("part", Geo_NAME))
+
+# Clear those out
+zipcode <- zipcode %>%
+    mutate(Geo_NAME = substr(Geo_NAME, 1, 5)) %>%
+  rename(total_pop = SE_T003_001,
+         male = SE_T003_002,
+         female = SE_T003_003)
+
+# Just sex
+sex <- zipcode %>%
+  select(Geo_NAME, total_pop, male, female)
 ```
+
+Get at zip code level for Oregon registered voters
+
+```{r}
+total_regs <- votern_all %>%
+  group_by(ZIP_CODE) %>%
+  summarize(count = n())
+```
+
+Proportion of registered that voted on Nov 2016
+
+```{r}
+prop_voted16 <- votern_all %>%
+  group_by(ZIP_CODE) %>%
+  summarize(prop_voted = mean(`11/08/2016` == "YES"))
+```
+
+Put them together
+
+```{r}
+zipcode_data <- inner_join(x = total_regs,
+                           y = prop_voted16,
+                           by = "ZIP_CODE")
+
+# Join with voter reg aggregated data
+sex_reg <- inner_join(x = sex, y = zipcode_data, 
+                      by = c("Geo_NAME" = "ZIP_CODE"))
+
+
+```
+
+
+
 Tidy Geographic Data 
 ```{r}
 #Here I would like to seperate the columns into ones with County and tract in seperate columns, but I am not sure how to do that. 
