@@ -95,20 +95,38 @@ library(data.table)
 
 ```r
 library(stringr)
+library(tidyr)
 ```
 
 Import and Bind Voter Data 
 
 ```r
-#This link attempts to make the data importable to anyone, however I can not get it to work 
-
-voterfull <- read_tsv('https://www.dropbox.com/s/khywm89j8myn5t0/or_voter_history.zip?dl=0')
+vote_particip <- read_csv("http://bit.ly/2kG37yJ")
 ```
 
 ```
 ## Parsed with column specification:
 ## cols(
-##   `<!DOCTYPE html><html lang="en" xmlns:fb="http://ogp.me/ns/fb#" xml:lang="en" class="maestro" xmlns="http://www.w3.org/1999/xhtml">` = col_character()
+##   VOTER_ID = col_integer(),
+##   BIRTH_DATE = col_character(),
+##   CONFIDENTIAL = col_character(),
+##   EFF_REGN_DATE = col_character(),
+##   STATUS = col_character(),
+##   PARTY_CODE = col_character(),
+##   COUNTY = col_character()
+## )
+```
+
+```r
+vote_motor <- read_csv("http://bit.ly/2lCadlB")
+```
+
+```
+## Parsed with column specification:
+## cols(
+##   VOTER_ID = col_integer(),
+##   DESCRIPTION = col_character(),
+##   COUNTY = col_character()
 ## )
 ```
 
@@ -123,7 +141,7 @@ file.choose()
 ```
 
 ```r
-votern1 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD1_VoterHistory_Jan2017.txt")
+voter21 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD1_VoterHistory_Jan2017.txt")
 ```
 
 ```
@@ -155,7 +173,7 @@ votern1 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD1_VoterHistory_Jan20
 ```
 
 ```r
-votern2 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD2_VoterHistory_Jan2017.txt")
+voter22 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD2_VoterHistory_Jan2017.txt")
 ```
 
 ```
@@ -181,7 +199,7 @@ votern2 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD2_VoterHistory_Jan20
 ```
 
 ```r
-votern3 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD3_VoterHistory_Jan2017.txt")
+voter23 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD3_VoterHistory_Jan2017.txt")
 ```
 
 ```
@@ -208,7 +226,7 @@ votern3 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD3_VoterHistory_Jan20
 ```
 
 ```r
-votern4 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD4_VoterHistory_Jan2017.txt")
+voter24 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD4_VoterHistory_Jan2017.txt")
 ```
 
 ```
@@ -237,7 +255,7 @@ votern4 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD4_VoterHistory_Jan20
 ```
 
 ```r
-votern5 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD5_VoterHistory_Jan2017.txt")
+voter25 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD5_VoterHistory_Jan2017.txt")
 ```
 
 ```
@@ -250,11 +268,11 @@ votern5 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD5_VoterHistory_Jan20
 ```
 
 ```r
-votern_all <- rbind(votern1, votern2, votern3, votern4, votern5)
+voter2_all <- rbind(voter21, voter22, voter23, voter24, voter25)
 ---------
 #These are the voter files I downloaded from Pauls google drive, tho they do not seem to have all the information that I need. 
   
-voter1 <- read_tsv("/Users/rosa/Documents/OMV project/data /CD1_VoterList_Jan2017.txt")
+voter31 <- read_tsv("/Users/rosa/Documents/OMV project/data /CD1_VoterList_Jan2017.txt")
 ```
 
 ```
@@ -286,11 +304,11 @@ voter1 <- read_tsv("/Users/rosa/Documents/OMV project/data /CD1_VoterList_Jan201
 ```
 
 ```
-## Error in ---------voter1 <- read_tsv("/Users/rosa/Documents/OMV project/data /CD1_VoterList_Jan2017.txt"): object 'voter1' not found
+## Error in ---------voter31 <- read_tsv("/Users/rosa/Documents/OMV project/data /CD1_VoterList_Jan2017.txt"): object 'voter31' not found
 ```
 
 ```r
-voter2 <- read_tsv("/Users/rosa/Documents/OMV project/data /CD2_VoterList_Jan2017.txt")
+voter32 <- read_tsv("/Users/rosa/Documents/OMV project/data /CD2_VoterList_Jan2017.txt")
 ```
 
 ```
@@ -321,7 +339,7 @@ voter2 <- read_tsv("/Users/rosa/Documents/OMV project/data /CD2_VoterList_Jan201
 ```
 
 ```r
-voter3 <- read_tsv("/Users/rosa/Documents/OMV project/data /CD3_VoterList_Jan2017.txt")
+voter33 <- read_tsv("/Users/rosa/Documents/OMV project/data /CD3_VoterList_Jan2017.txt")
 ```
 
 ```
@@ -352,7 +370,7 @@ voter3 <- read_tsv("/Users/rosa/Documents/OMV project/data /CD3_VoterList_Jan201
 ```
 
 ```r
-voter4 <- read_tsv("/Users/rosa/Documents/OMV project/data /CD4_VoterList_Jan2017.txt")
+voter34 <- read_tsv("/Users/rosa/Documents/OMV project/data /CD4_VoterList_Jan2017.txt")
 ```
 
 ```
@@ -385,7 +403,7 @@ voter4 <- read_tsv("/Users/rosa/Documents/OMV project/data /CD4_VoterList_Jan201
 ```
 
 ```r
-voter5 <- read_tsv("/Users/rosa/Documents/OMV project/data /CD5_VoterList_Jan2017.txt")
+voter35 <- read_tsv("/Users/rosa/Documents/OMV project/data /CD5_VoterList_Jan2017.txt")
 ```
 
 ```
@@ -415,7 +433,7 @@ voter5 <- read_tsv("/Users/rosa/Documents/OMV project/data /CD5_VoterList_Jan201
 ```
 
 ```r
-voter_all <- rbind(voter1, voter2, voter3, voter4, voter5)
+voter3_all <- rbind(voter1, voter2, voter3, voter4, voter5)
 ```
 
 ```
@@ -429,19 +447,31 @@ head(voter_all)
 ```
 ## Error in head(voter_all): object 'voter_all' not found
 ```
+
+```r
+----
+voter_all <- inner_join(x = voter2_all,
+                           y = vote_motor,
+                           by = "VOTER_ID")
+```
+
+```
+## Error in ----voter_all <- inner_join(x = voter2_all, y = vote_motor, by = "VOTER_ID"): object 'voter_all' not found
+```
+
+```r
+voter_all <- left_join(voter2_all, vote_motor, by = "VOTER_ID")
+```
 Tidy Vote File 
 
 ```r
-#Here I select the columns I need. I would like to select the "11/08/2016" file but it will not let me, I think becuase the title is numeric. 
-votern_or <- votern_all %>%
-  select(VOTER_ID, FIRST_NAME, LAST_NAME, COUNTY, CITY, BIRTH_DATE, STATUS, PARTY_CODE, RES_ADDRESS_1, PRECINCT_NAME, PRECINCT, ZIP_CODE)
-
-# Exluding 11/08/2016 
+voter_or <- voter_all %>%
+  select(VOTER_ID, FIRST_NAME, LAST_NAME, COUNTY.x, CITY, BIRTH_DATE, STATUS, PARTY_CODE, PRECINCT_NAME, PRECINCT, ZIP_CODE, `11/08/2016`, DESCRIPTION, `11/06/2012`, `11/04/2008`)
 ```
 Import Geographic Data
 
 ```r
-#I first import Census tract data, then State Legislative district, then County. 
+#I first import Census tract data, then State Legislative district, then County. I finally import Zip Code which I use for this project. However, while the others are from the 2015 community report, the Zip Code data comes from the 2010 election, so there is not perfect demographic information. 
 #file.choose()
 census <- read_csv("/Users/rosa/Desktop/SEcensus.csv")
 ```
@@ -548,8 +578,7 @@ county <- read_csv("/Users/rosa/Desktop/SEcounty.csv")
 
 ```r
 #file.choose()
-zipcode <- read_csv("/Users/rosa/Desktop/zipcode.csv") %>%
-  mutate(Geo_NAME = str_replace_all(Geo_NAME, pattern = "ZCTA5 ", replacement = ""))
+zipcode <- read_csv("/Users/rosa/Desktop/zipcode.csv")
 ```
 
 ```
@@ -575,8 +604,12 @@ zipcode <- read_csv("/Users/rosa/Desktop/zipcode.csv") %>%
 ##   SE_T054_008 = col_integer()
 ## )
 ```
+Tidy Geographic Data 
 
 ```r
+zipcode <- zipcode %>%
+  mutate(Geo_NAME = str_replace_all(Geo_NAME, pattern = "ZCTA5 ", replacement = ""))
+
 # Make note of which zips have "(part)" - For later
 part_zips <- zipcode %>%
   filter(grepl("part", Geo_NAME))
@@ -586,81 +619,86 @@ zipcode <- zipcode %>%
     mutate(Geo_NAME = substr(Geo_NAME, 1, 5)) %>%
   rename(total_pop = SE_T003_001,
          male = SE_T003_002,
-         female = SE_T003_003)
+         female = SE_T003_003,
+         total_pop2 = SE_T054_001,
+         white = SE_T054_002,
+         black = SE_T054_003, 
+         ai = SE_T054_004,
+         asian = SE_T054_005,
+         hawaiian = SE_T054_006,
+         other = SE_T054_007, 
+         two = SE_T054_008,
+         ZIP_CODE = Geo_NAME) 
 
-# Just sex
+         
+# Just Sex
 sex <- zipcode %>%
-  select(Geo_NAME, total_pop, male, female)
+  select(ZIP_CODE, total_pop, male, female)
+
+# Just Race
+
+race <- zipcode %>%
+  select(ZIP_CODE, total_pop, white, black, ai, asian, hawaiian, other, two)
 ```
 
 Get at zip code level for Oregon registered voters
 
 
 ```r
-total_regs <- votern_all %>%
+total_regs <- voter_or %>%
   group_by(ZIP_CODE) %>%
   summarize(count = n())
 ```
 
 Proportion of registered that voted on Nov 2016
 
-
 ```r
-prop_voted16 <- votern_all %>%
+prop_voted16 <- voter_or %>%
   group_by(ZIP_CODE) %>%
   summarize(prop_voted = mean(`11/08/2016` == "YES"))
 ```
+Proportion that are not Motor Voter Registered 
+
+```r
+#this is not working, and also there must be a better way to do this? 
+prop_notMV <- voter_or %>%
+  group_by(ZIP_CODE) %>%
+  summarize(prop_MV = mean(`DESCRIPTION` == "NA"))
+```
 
 Put them together
-
 
 ```r
 zipcode_data <- inner_join(x = total_regs,
                            y = prop_voted16,
                            by = "ZIP_CODE")
 
-# Join with voter reg aggregated data
+# Join sex with voter reg aggregated data
 sex_reg <- inner_join(x = sex, y = zipcode_data, 
-                      by = c("Geo_NAME" = "ZIP_CODE"))
+                      by = "ZIP_CODE")
+
+# Join race with voter reg aggregated data
+race_reg <- inner_join(x = race, y = zipcode_data, 
+                      by = "ZIP_CODE")
+# One set with both 
+
+both_reg <- inner_join(x = race_reg, y = sex_reg, 
+                      by = "ZIP_CODE")
+
+both_reg2 <- both_reg %>% 
+  select(ZIP_CODE, total_pop.x, white, black, ai, asian, hawaiian, other, two, count.x, prop_voted.x, male, female)
 ```
-
-
-
-Tidy Geographic Data 
+Tiday Race and Sex 
 
 ```r
-#Here I would like to seperate the columns into ones with County and tract in seperate columns, but I am not sure how to do that. 
+race_reg2<- race_reg %>% 
+  gather(key="race", value = "number", 3:9)
 
-#censust <- census %>%
-  #select(Geo_NAME, Geo_COUNTY)
+sex_reg2 <- sex_reg %>% 
+  gather(key="sex", value = "number", 3:4)
 ```
 
- County Join 
 
-```r
-votern_all2 <- votern_all %>%
-  mutate(COUNTY = tolower(COUNTY))
-county2 <- county %>%
-  mutate(COUNTY = tolower(COUNTY))
-join <- inner_join(votern_all2, county2, by = "COUNTY")
 
-#voter_or %>% count(COUNTY)
-#voter_or %>% count(COUNTY, PARTY_CODE)
 ```
-Visualize 
-
-```r
-ggplot(county, aes(x= TotalPopRace, y= PopWhite))+
-  geom_line()
-```
-
-![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-1.png)
-
-```r
-ggplot(county, aes(x= PopWhite))+
-  geom_bar()+ 
-  facet_grid(.~COUNTY)
-```
-
-![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-2.png)
 
