@@ -101,23 +101,7 @@ library(tidyr)
 Import and Bind Voter Data 
 
 ```r
-vote_particip <- read_csv("http://bit.ly/2kG37yJ")
-```
-
-```
-## Parsed with column specification:
-## cols(
-##   VOTER_ID = col_integer(),
-##   BIRTH_DATE = col_character(),
-##   CONFIDENTIAL = col_character(),
-##   EFF_REGN_DATE = col_character(),
-##   STATUS = col_character(),
-##   PARTY_CODE = col_character(),
-##   COUNTY = col_character()
-## )
-```
-
-```r
+#vote_particip <- read_csv("http://bit.ly/2kG37yJ")
 vote_motor <- read_csv("http://bit.ly/2lCadlB")
 ```
 
@@ -131,8 +115,7 @@ vote_motor <- read_csv("http://bit.ly/2lCadlB")
 ```
 
 ```r
-#These are the files with correct voting turnout data, however they are still missing registration type, I am not sure where to find that 
-
+#These are the files with correct voting turnout data, however they are still missing registration type, which I join from the data used in Home Work 1. 
 file.choose()
 ```
 
@@ -141,7 +124,7 @@ file.choose()
 ```
 
 ```r
-voter21 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD1_VoterHistory_Jan2017.txt")
+voter1 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD1_VoterHistory_Jan2017.txt")
 ```
 
 ```
@@ -173,7 +156,7 @@ voter21 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD1_VoterHistory_Jan20
 ```
 
 ```r
-voter22 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD2_VoterHistory_Jan2017.txt")
+voter2 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD2_VoterHistory_Jan2017.txt")
 ```
 
 ```
@@ -199,7 +182,7 @@ voter22 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD2_VoterHistory_Jan20
 ```
 
 ```r
-voter23 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD3_VoterHistory_Jan2017.txt")
+voter3 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD3_VoterHistory_Jan2017.txt")
 ```
 
 ```
@@ -226,7 +209,7 @@ voter23 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD3_VoterHistory_Jan20
 ```
 
 ```r
-voter24 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD4_VoterHistory_Jan2017.txt")
+voter4 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD4_VoterHistory_Jan2017.txt")
 ```
 
 ```
@@ -255,7 +238,7 @@ voter24 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD4_VoterHistory_Jan20
 ```
 
 ```r
-voter25 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD5_VoterHistory_Jan2017.txt")
+voter5 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD5_VoterHistory_Jan2017.txt")
 ```
 
 ```
@@ -268,315 +251,51 @@ voter25 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD5_VoterHistory_Jan20
 ```
 
 ```r
-voter2_all <- rbind(voter21, voter22, voter23, voter24, voter25)
+voter_all <- rbind(voter1, voter2, voter3, voter4, voter5)
 ---------
-#These are the voter files I downloaded from Pauls google drive, tho they do not seem to have all the information that I need. 
+#These are the voter files I downloaded from Pauls google drive, I am not currently using them. 
   
-voter31 <- read_tsv("/Users/rosa/Documents/OMV project/data /CD1_VoterList_Jan2017.txt")
-```
+#voter31 <- read_tsv("/Users/rosa/Documents/OMV project/data /CD1_VoterList_Jan2017.txt")
+#voter32 <- read_tsv("/Users/rosa/Documents/OMV project/data /CD2_VoterList_Jan2017.txt")
+#voter33 <- read_tsv("/Users/rosa/Documents/OMV project/data /CD3_VoterList_Jan2017.txt")
+#voter34 <- read_tsv("/Users/rosa/Documents/OMV project/data /CD4_VoterList_Jan2017.txt")
+#voter35 <- read_tsv("/Users/rosa/Documents/OMV project/data /CD5_VoterList_Jan2017.txt")
 
-```
-## Warning: Missing column names filled in: 'X41' [41]
-```
+#voter3_all <- rbind(voter1, voter2, voter3, voter4, voter5)
+ 
 
-```
-## Parsed with column specification:
-## cols(
-##   .default = col_character(),
-##   VOTER_ID = col_integer(),
-##   HOUSE_NUM = col_integer(),
-##   ZIP_CODE = col_integer(),
-##   ZIP_PLUS_FOUR = col_integer()
-## )
-## See spec(...) for full column specifications.
-```
-
-```
-## Warning: 590173 parsing failures.
-## row col   expected     actual
-##   1  -- 41 columns 40 columns
-##   2  -- 41 columns 40 columns
-##   3  -- 41 columns 40 columns
-##   4  -- 41 columns 40 columns
-##   5  -- 41 columns 40 columns
-## ... ... .......... ..........
-## See problems(...) for more details.
-```
-
-```
-## Error in ---------voter31 <- read_tsv("/Users/rosa/Documents/OMV project/data /CD1_VoterList_Jan2017.txt"): object 'voter31' not found
-```
-
-```r
-voter32 <- read_tsv("/Users/rosa/Documents/OMV project/data /CD2_VoterList_Jan2017.txt")
-```
-
-```
-## Warning: Missing column names filled in: 'X41' [41]
-```
-
-```
-## Parsed with column specification:
-## cols(
-##   .default = col_character(),
-##   VOTER_ID = col_integer(),
-##   EFF_ZIP_CODE = col_integer(),
-##   SPLIT = col_integer()
-## )
-## See spec(...) for full column specifications.
-```
-
-```
-## Warning: 645693 parsing failures.
-## row col   expected     actual
-##   1  -- 41 columns 40 columns
-##   2  -- 41 columns 40 columns
-##   3  -- 41 columns 40 columns
-##   4  -- 41 columns 40 columns
-##   5  -- 41 columns 40 columns
-## ... ... .......... ..........
-## See problems(...) for more details.
-```
-
-```r
-voter33 <- read_tsv("/Users/rosa/Documents/OMV project/data /CD3_VoterList_Jan2017.txt")
-```
-
-```
-## Warning: Missing column names filled in: 'X41' [41]
-```
-
-```
-## Parsed with column specification:
-## cols(
-##   .default = col_character(),
-##   VOTER_ID = col_integer(),
-##   EFF_ZIP_CODE = col_integer(),
-##   EFF_ZIP_PLUS_FOUR = col_integer()
-## )
-## See spec(...) for full column specifications.
-```
-
-```
-## Warning: 656632 parsing failures.
-## row col   expected     actual
-##   1  -- 41 columns 40 columns
-##   2  -- 41 columns 40 columns
-##   3  -- 41 columns 40 columns
-##   4  -- 41 columns 40 columns
-##   5  -- 41 columns 40 columns
-## ... ... .......... ..........
-## See problems(...) for more details.
-```
-
-```r
-voter34 <- read_tsv("/Users/rosa/Documents/OMV project/data /CD4_VoterList_Jan2017.txt")
-```
-
-```
-## Warning: Missing column names filled in: 'X41' [41]
-```
-
-```
-## Parsed with column specification:
-## cols(
-##   .default = col_character(),
-##   VOTER_ID = col_integer(),
-##   HOUSE_NUM = col_integer(),
-##   ZIP_CODE = col_integer(),
-##   ZIP_PLUS_FOUR = col_integer(),
-##   EFF_ZIP_CODE = col_integer()
-## )
-## See spec(...) for full column specifications.
-```
-
-```
-## Warning: 601871 parsing failures.
-## row col   expected     actual
-##   1  -- 41 columns 40 columns
-##   2  -- 41 columns 40 columns
-##   3  -- 41 columns 40 columns
-##   4  -- 41 columns 40 columns
-##   5  -- 41 columns 40 columns
-## ... ... .......... ..........
-## See problems(...) for more details.
-```
-
-```r
-voter35 <- read_tsv("/Users/rosa/Documents/OMV project/data /CD5_VoterList_Jan2017.txt")
-```
-
-```
-## Warning: Missing column names filled in: 'X41' [41]
-```
-
-```
-## Parsed with column specification:
-## cols(
-##   .default = col_character(),
-##   VOTER_ID = col_integer(),
-##   EFF_ZIP_CODE = col_integer()
-## )
-## See spec(...) for full column specifications.
-```
-
-```
-## Warning: 564068 parsing failures.
-## row col   expected     actual
-##   1  -- 41 columns 40 columns
-##   2  -- 41 columns 40 columns
-##   3  -- 41 columns 40 columns
-##   4  -- 41 columns 40 columns
-##   5  -- 41 columns 40 columns
-## ... ... .......... ..........
-## See problems(...) for more details.
-```
-
-```r
-voter3_all <- rbind(voter1, voter2, voter3, voter4, voter5)
-```
-
-```
-## Error in rbind(voter1, voter2, voter3, voter4, voter5): object 'voter1' not found
-```
-
-```r
-head(voter_all) 
-```
-
-```
-## Error in head(voter_all): object 'voter_all' not found
-```
-
-```r
 ----
-voter_all <- inner_join(x = voter2_all,
-                           y = vote_motor,
-                           by = "VOTER_ID")
+#voter_all <- inner_join(x = voter2_all,y = vote_motor, by = "VOTER_ID")
+
+voter2_all <- left_join(voter_all, vote_motor, by = "VOTER_ID")
 ```
 
 ```
-## Error in ----voter_all <- inner_join(x = voter2_all, y = vote_motor, by = "VOTER_ID"): object 'voter_all' not found
-```
-
-```r
-voter_all <- left_join(voter2_all, vote_motor, by = "VOTER_ID")
+## Error in -------------voter2_all <- left_join(voter_all, vote_motor, by = "VOTER_ID"): object 'voter2_all' not found
 ```
 Tidy Vote File 
 
 ```r
-voter_or <- voter_all %>%
+voter_or <- voter2_all %>%
   select(VOTER_ID, FIRST_NAME, LAST_NAME, COUNTY.x, CITY, BIRTH_DATE, STATUS, PARTY_CODE, PRECINCT_NAME, PRECINCT, ZIP_CODE, `11/08/2016`, DESCRIPTION, `11/06/2012`, `11/04/2008`)
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'voter2_all' not found
 ```
 Import Geographic Data
 
 ```r
 #I first import Census tract data, then State Legislative district, then County. I finally import Zip Code which I use for this project. However, while the others are from the 2015 community report, the Zip Code data comes from the 2010 election, so there is not perfect demographic information. 
 #file.choose()
-census <- read_csv("/Users/rosa/Desktop/SEcensus.csv")
-```
+#census <- read_csv("/Users/rosa/Desktop/SEcensus.csv")
 
-```
-## Parsed with column specification:
-## cols(
-##   .default = col_character(),
-##   Geo_FIPS = col_double(),
-##   Geo_SUMLEV = col_integer(),
-##   Geo_STATE = col_integer(),
-##   SE_T004_001 = col_integer(),
-##   SE_T004_002 = col_integer(),
-##   SE_T004_003 = col_integer(),
-##   SE_T007_001 = col_integer(),
-##   SE_T007_002 = col_integer(),
-##   SE_T007_003 = col_integer(),
-##   SE_T007_004 = col_integer(),
-##   SE_T007_005 = col_integer(),
-##   SE_T007_006 = col_integer(),
-##   SE_T007_007 = col_integer(),
-##   SE_T007_008 = col_integer(),
-##   SE_T007_009 = col_integer(),
-##   SE_T007_010 = col_integer(),
-##   SE_T007_011 = col_integer(),
-##   SE_T007_012 = col_integer(),
-##   SE_T007_013 = col_integer(),
-##   SE_T013_001 = col_integer()
-##   # ... with 8 more columns
-## )
-```
-
-```
-## See spec(...) for full column specifications.
-```
-
-```r
 #file.choose()
-stateleg <- read_csv("/Users/rosa/Desktop/SEstateleg.csv")
-```
+#stateleg <- read_csv("/Users/rosa/Desktop/SEstateleg.csv")
 
-```
-## Parsed with column specification:
-## cols(
-##   .default = col_character(),
-##   Geo_FIPS = col_integer(),
-##   Geo_SUMLEV = col_integer(),
-##   Geo_STATE = col_integer(),
-##   SE_T004_001 = col_integer(),
-##   SE_T004_002 = col_integer(),
-##   SE_T004_003 = col_integer(),
-##   SE_T007_001 = col_integer(),
-##   SE_T007_002 = col_integer(),
-##   SE_T007_003 = col_integer(),
-##   SE_T007_004 = col_integer(),
-##   SE_T007_005 = col_integer(),
-##   SE_T007_006 = col_integer(),
-##   SE_T007_007 = col_integer(),
-##   SE_T007_008 = col_integer(),
-##   SE_T007_009 = col_integer(),
-##   SE_T007_010 = col_integer(),
-##   SE_T007_011 = col_integer(),
-##   SE_T007_012 = col_integer(),
-##   SE_T007_013 = col_integer(),
-##   SE_T013_001 = col_integer()
-##   # ... with 8 more columns
-## )
-## See spec(...) for full column specifications.
-```
-
-```r
 #file.choose()
-county <- read_csv("/Users/rosa/Desktop/SEcounty.csv")
-```
+#county <- read_csv("/Users/rosa/Desktop/SEcounty.csv")
 
-```
-## Parsed with column specification:
-## cols(
-##   .default = col_character(),
-##   Geo_FIPS = col_integer(),
-##   Geo_SUMLEV = col_integer(),
-##   Geo_GEOCOMP = col_integer(),
-##   Geo_LOGRECNO = col_integer(),
-##   Geo_STATE = col_integer(),
-##   Geo_COUNTY = col_integer(),
-##   TotalPopSex = col_integer(),
-##   PopMale = col_integer(),
-##   PopFemale = col_integer(),
-##   TotalPopAge = col_integer(),
-##   PopFive = col_integer(),
-##   PopNine = col_integer(),
-##   PopFourteen = col_integer(),
-##   PopSeventeen = col_integer(),
-##   PopTwentyfour = col_integer(),
-##   PopThirtyfour = col_integer(),
-##   PopFortyfour = col_integer(),
-##   PopFiftyfour = col_integer(),
-##   PopSixtyfour = col_integer(),
-##   PopSeventyfour = col_integer()
-##   # ... with 11 more columns
-## )
-## See spec(...) for full column specifications.
-```
-
-```r
 #file.choose()
 zipcode <- read_csv("/Users/rosa/Desktop/zipcode.csv")
 ```
@@ -650,6 +369,10 @@ total_regs <- voter_or %>%
   summarize(count = n())
 ```
 
+```
+## Error in eval(expr, envir, enclos): object 'voter_or' not found
+```
+
 Proportion of registered that voted on Nov 2016
 
 ```r
@@ -657,13 +380,32 @@ prop_voted16 <- voter_or %>%
   group_by(ZIP_CODE) %>%
   summarize(prop_voted = mean(`11/08/2016` == "YES"))
 ```
+
+```
+## Error in eval(expr, envir, enclos): object 'voter_or' not found
+```
 Proportion that are not Motor Voter Registered 
 
 ```r
 #this is not working, and also there must be a better way to do this? 
-prop_notMV <- voter_or %>%
-  group_by(ZIP_CODE) %>%
-  summarize(prop_MV = mean(`DESCRIPTION` == "NA"))
+votor_or2 <- votor_or %>%
+  mutate(DESCRIPTION = stringr::str_replace_all(DESCRIPTION, NA, "Not Registered")
+         
+   #  MV <- voter_or %>%
+ # group_by(ZIP_CODE) %>%
+  #summarize(prop_MV = mean(`DESCRIPTION` != "Not Registered"))
+  
+  
+      # prop_motorvoter <- voter_or %>%
+ # group_by(ZIP_CODE) %>%
+ # summarize(prop_NotMV = mean(`DESCRIPTION` == "Not Registered"))
+```
+
+```
+## Error: <text>:13:0: unexpected end of input
+## 11:  # group_by(ZIP_CODE) %>%
+## 12:  # summarize(prop_NotMV = mean(`DESCRIPTION` == "Not Registered"))
+##    ^
 ```
 
 Put them together
@@ -672,30 +414,104 @@ Put them together
 zipcode_data <- inner_join(x = total_regs,
                            y = prop_voted16,
                            by = "ZIP_CODE")
+```
 
+```
+## Error in inner_join(x = total_regs, y = prop_voted16, by = "ZIP_CODE"): object 'total_regs' not found
+```
+
+```r
 # Join sex with voter reg aggregated data
 sex_reg <- inner_join(x = sex, y = zipcode_data, 
                       by = "ZIP_CODE")
+```
 
+```
+## Error in is.data.frame(y): object 'zipcode_data' not found
+```
+
+```r
 # Join race with voter reg aggregated data
 race_reg <- inner_join(x = race, y = zipcode_data, 
                       by = "ZIP_CODE")
+```
+
+```
+## Error in is.data.frame(y): object 'zipcode_data' not found
+```
+
+```r
 # One set with both 
 
 both_reg <- inner_join(x = race_reg, y = sex_reg, 
                       by = "ZIP_CODE")
+```
 
+```
+## Error in inner_join(x = race_reg, y = sex_reg, by = "ZIP_CODE"): object 'race_reg' not found
+```
+
+```r
 both_reg2 <- both_reg %>% 
   select(ZIP_CODE, total_pop.x, white, black, ai, asian, hawaiian, other, two, count.x, prop_voted.x, male, female)
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'both_reg' not found
 ```
 Tiday Race and Sex 
 
 ```r
 race_reg2<- race_reg %>% 
   gather(key="race", value = "number", 3:9)
+```
 
+```
+## Error in eval(expr, envir, enclos): object 'race_reg' not found
+```
+
+```r
 sex_reg2 <- sex_reg %>% 
   gather(key="sex", value = "number", 3:4)
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'sex_reg' not found
+```
+Math for Graphics 
+
+```r
+ both_reg3 <- both_reg %>% transform( prop_white = white / total_pop.x)
+#What I would have like to have is graphs comparing all voters, to voters registered through OMV, however I could not figure out the OMV pr
+
+ggplot(both_reg3, aes(x= prop_white, y = prop_voted.y)) +
+geom_jitter(aes(color = total_pop.y))+
+geom_smooth (method = "lm", se = FALSE,color = "darkorchid") 
+
+votor_orgraph <- voter_or %>%
+  group_by(ZIP_CODE) %>%
+  select (DESCRIPTION, ZIP_CODE)
+
+both_reg4 <- inner_join(x = votor_orgraph, y = both_reg3, 
+                      by = "ZIP_CODE")
+
+ggplot(both_reg4, aes(x= prop_white, y = prop_voted.y)) +
+geom_jitter(aes(color = total_pop.y))+
+geom_smooth (method = "lm", se = FALSE,color = "darkorchid") +
+  facet_wrap(~.DESCRIPTION)
+
+
+
+ggplot 
+
+3 types of bar plot (position = stack, dodge, fill) 
+```
+
+```
+## Error: <text>:24:3: unexpected symbol
+## 23: 
+## 24: 3 types
+##       ^
 ```
 
 
