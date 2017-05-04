@@ -520,13 +520,45 @@ race &lt;- zipcode %&gt;%
 
 <p>Proportion that are not Motor Voter Registered </p>
 
-<pre><code class="r">#this is not working, and also there must be a better way to do this? 
-votor_or2 &lt;- votor_or %&gt;%
-  mutate(DESCRIPTION = stringr::str_replace_all(DESCRIPTION, NA, &quot;Not Registered&quot;)
+<pre><code class="r">a &lt;- (is.na(voter_or$DESCRIPTION))
+</code></pre>
 
-   #  MV &lt;- voter_or %&gt;%
- # group_by(ZIP_CODE) %&gt;%
-  #summarize(prop_MV = mean(`DESCRIPTION` != &quot;Not Registered&quot;))
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;voter_or&#39; not found
+</code></pre>
+
+<pre><code class="r">voter_or$DESCRIPTION[a] &lt;- &quot;conventional&quot;
+</code></pre>
+
+<pre><code>## Error in voter_or$DESCRIPTION[a] &lt;- &quot;conventional&quot;: object &#39;voter_or&#39; not found
+</code></pre>
+
+<pre><code class="r">voter_or$DESCRIPTION &lt;- as.factor(voter_or$DESCRIPTION)
+</code></pre>
+
+<pre><code>## Error in is.factor(x): object &#39;voter_or&#39; not found
+</code></pre>
+
+<pre><code class="r">table(voter_or$DESCRIPTION)
+</code></pre>
+
+<pre><code>## Error in table(voter_or$DESCRIPTION): object &#39;voter_or&#39; not found
+</code></pre>
+
+<pre><code class="r">prop_regcon &lt;- voter_or %&gt;%
+  group_by(ZIP_CODE) %&gt;%
+  summarize(prop_reg = mean(DESCRIPTION == &quot;conventional&quot;))
+</code></pre>
+
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;voter_or&#39; not found
+</code></pre>
+
+<pre><code class="r">#Dont need this any more, also does not work. 
+#votor_or2 &lt;- votor_or %&gt;%
+#  mutate(DESCRIPTION = stringr::str_replace_all(DESCRIPTION, NA, &quot;Not Registered&quot;)
+
+#MV &lt;- voter_or2 %&gt;%
+  #group_by(ZIP_CODE) %&gt;%
+  #summarize(prop_MV = mean(DESCRIPTION != &quot;conventional&quot;))
 
 
       # prop_motorvoter &lt;- voter_or %&gt;%
@@ -534,13 +566,7 @@ votor_or2 &lt;- votor_or %&gt;%
  # summarize(prop_NotMV = mean(`DESCRIPTION` == &quot;Not Registered&quot;))
 </code></pre>
 
-<pre><code>## Error: &lt;text&gt;:13:0: unexpected end of input
-## 11:  # group_by(ZIP_CODE) %&gt;%
-## 12:  # summarize(prop_NotMV = mean(`DESCRIPTION` == &quot;Not Registered&quot;))
-##    ^
-</code></pre>
-
-<p>Put them together</p>
+<p>Construct data sets with Voter info by Zip Code including, number of registered voters, how they registered, and the proportion that voted</p>
 
 <pre><code class="r">zipcode_data &lt;- inner_join(x = total_regs,
                            y = prop_voted16,
@@ -550,20 +576,28 @@ votor_or2 &lt;- votor_or %&gt;%
 <pre><code>## Error in inner_join(x = total_regs, y = prop_voted16, by = &quot;ZIP_CODE&quot;): object &#39;total_regs&#39; not found
 </code></pre>
 
+<pre><code class="r">zipcode_datafull &lt;- inner_join(x = zipcode_data,
+                           y = prop_regcon,
+                           by = &quot;ZIP_CODE&quot;)
+</code></pre>
+
+<pre><code>## Error in inner_join(x = zipcode_data, y = prop_regcon, by = &quot;ZIP_CODE&quot;): object &#39;zipcode_data&#39; not found
+</code></pre>
+
 <pre><code class="r"># Join sex with voter reg aggregated data
-sex_reg &lt;- inner_join(x = sex, y = zipcode_data, 
+sex_reg &lt;- inner_join(x = sex, y = zipcode_datafull, 
                       by = &quot;ZIP_CODE&quot;)
 </code></pre>
 
-<pre><code>## Error in is.data.frame(y): object &#39;zipcode_data&#39; not found
+<pre><code>## Error in is.data.frame(y): object &#39;zipcode_datafull&#39; not found
 </code></pre>
 
 <pre><code class="r"># Join race with voter reg aggregated data
-race_reg &lt;- inner_join(x = race, y = zipcode_data, 
+race_reg &lt;- inner_join(x = race, y = zipcode_datafull, 
                       by = &quot;ZIP_CODE&quot;)
 </code></pre>
 
-<pre><code>## Error in is.data.frame(y): object &#39;zipcode_data&#39; not found
+<pre><code>## Error in is.data.frame(y): object &#39;zipcode_datafull&#39; not found
 </code></pre>
 
 <pre><code class="r"># One set with both 
@@ -576,13 +610,13 @@ both_reg &lt;- inner_join(x = race_reg, y = sex_reg,
 </code></pre>
 
 <pre><code class="r">both_reg2 &lt;- both_reg %&gt;% 
-  select(ZIP_CODE, total_pop.x, white, black, ai, asian, hawaiian, other, two, count.x, prop_voted.x, male, female)
+  select(ZIP_CODE, total_pop.x, white, black, ai, asian, hawaiian, other, two, count.x, prop_voted.x, male, female, prop_reg.x)
 </code></pre>
 
 <pre><code>## Error in eval(expr, envir, enclos): object &#39;both_reg&#39; not found
 </code></pre>
 
-<p>Tiday Race and Sex </p>
+<p>Tidy Files for Analysis  </p>
 
 <pre><code class="r">race_reg2&lt;- race_reg %&gt;% 
   gather(key=&quot;race&quot;, value = &quot;number&quot;, 3:9)
@@ -598,38 +632,19 @@ both_reg &lt;- inner_join(x = race_reg, y = sex_reg,
 <pre><code>## Error in eval(expr, envir, enclos): object &#39;sex_reg&#39; not found
 </code></pre>
 
-<p>Math for Graphics </p>
-
-<pre><code class="r"> both_reg3 &lt;- both_reg %&gt;% transform( prop_white = white / total_pop.x)
-#What I would have like to have is graphs comparing all voters, to voters registered through OMV, however I could not figure out the OMV pr
-
-ggplot(both_reg3, aes(x= prop_white, y = prop_voted.y)) +
-geom_jitter(aes(color = total_pop.y))+
-geom_smooth (method = &quot;lm&quot;, se = FALSE,color = &quot;darkorchid&quot;) 
-
-votor_orgraph &lt;- voter_or %&gt;%
-  group_by(ZIP_CODE) %&gt;%
-  select (DESCRIPTION, ZIP_CODE)
-
-both_reg4 &lt;- inner_join(x = votor_orgraph, y = both_reg3, 
-                      by = &quot;ZIP_CODE&quot;)
-
-ggplot(both_reg4, aes(x= prop_white, y = prop_voted.y)) +
-geom_jitter(aes(color = total_pop.y))+
-geom_smooth (method = &quot;lm&quot;, se = FALSE,color = &quot;darkorchid&quot;) +
-  facet_wrap(~.DESCRIPTION)
-
-
-
-ggplot 
-
-3 types of bar plot (position = stack, dodge, fill) 
+<pre><code class="r">both_regtidy &lt;-inner_join(x = race_reg2, y = sex_reg2, 
+                      by = &quot;ZIP_CODE&quot;) 
 </code></pre>
 
-<pre><code>## Error: &lt;text&gt;:24:3: unexpected symbol
-## 23: 
-## 24: 3 types
-##       ^
+<pre><code>## Error in inner_join(x = race_reg2, y = sex_reg2, by = &quot;ZIP_CODE&quot;): object &#39;race_reg2&#39; not found
+</code></pre>
+
+<pre><code class="r">#what varriables do I need, Should I change how the Race and Sex columns are organized?  
+</code></pre>
+
+<p>Analysis </p>
+
+<pre><code class="r">#I would like to have a percent black, and a percent white ect columns. Then the analysis I can do is- correlation between regisration through MV and percentage white. Percent vote and race.
 </code></pre>
 
 <pre><code>

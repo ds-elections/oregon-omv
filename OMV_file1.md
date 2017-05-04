@@ -387,13 +387,55 @@ prop_voted16 <- voter_or %>%
 Proportion that are not Motor Voter Registered 
 
 ```r
-#this is not working, and also there must be a better way to do this? 
-votor_or2 <- votor_or %>%
-  mutate(DESCRIPTION = stringr::str_replace_all(DESCRIPTION, NA, "Not Registered")
+a <- (is.na(voter_or$DESCRIPTION))
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'voter_or' not found
+```
+
+```r
+voter_or$DESCRIPTION[a] <- "conventional"
+```
+
+```
+## Error in voter_or$DESCRIPTION[a] <- "conventional": object 'voter_or' not found
+```
+
+```r
+voter_or$DESCRIPTION <- as.factor(voter_or$DESCRIPTION)
+```
+
+```
+## Error in is.factor(x): object 'voter_or' not found
+```
+
+```r
+table(voter_or$DESCRIPTION)
+```
+
+```
+## Error in table(voter_or$DESCRIPTION): object 'voter_or' not found
+```
+
+```r
+prop_regcon <- voter_or %>%
+  group_by(ZIP_CODE) %>%
+  summarize(prop_reg = mean(DESCRIPTION == "conventional"))
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'voter_or' not found
+```
+
+```r
+#Dont need this any more, also does not work. 
+#votor_or2 <- votor_or %>%
+#  mutate(DESCRIPTION = stringr::str_replace_all(DESCRIPTION, NA, "Not Registered")
          
-   #  MV <- voter_or %>%
- # group_by(ZIP_CODE) %>%
-  #summarize(prop_MV = mean(`DESCRIPTION` != "Not Registered"))
+#MV <- voter_or2 %>%
+  #group_by(ZIP_CODE) %>%
+  #summarize(prop_MV = mean(DESCRIPTION != "conventional"))
   
   
       # prop_motorvoter <- voter_or %>%
@@ -401,14 +443,8 @@ votor_or2 <- votor_or %>%
  # summarize(prop_NotMV = mean(`DESCRIPTION` == "Not Registered"))
 ```
 
-```
-## Error: <text>:13:0: unexpected end of input
-## 11:  # group_by(ZIP_CODE) %>%
-## 12:  # summarize(prop_NotMV = mean(`DESCRIPTION` == "Not Registered"))
-##    ^
-```
+Construct data sets with Voter info by Zip Code including, number of registered voters, how they registered, and the proportion that voted
 
-Put them together
 
 ```r
 zipcode_data <- inner_join(x = total_regs,
@@ -421,23 +457,33 @@ zipcode_data <- inner_join(x = total_regs,
 ```
 
 ```r
+zipcode_datafull <- inner_join(x = zipcode_data,
+                           y = prop_regcon,
+                           by = "ZIP_CODE")
+```
+
+```
+## Error in inner_join(x = zipcode_data, y = prop_regcon, by = "ZIP_CODE"): object 'zipcode_data' not found
+```
+
+```r
 # Join sex with voter reg aggregated data
-sex_reg <- inner_join(x = sex, y = zipcode_data, 
+sex_reg <- inner_join(x = sex, y = zipcode_datafull, 
                       by = "ZIP_CODE")
 ```
 
 ```
-## Error in is.data.frame(y): object 'zipcode_data' not found
+## Error in is.data.frame(y): object 'zipcode_datafull' not found
 ```
 
 ```r
 # Join race with voter reg aggregated data
-race_reg <- inner_join(x = race, y = zipcode_data, 
+race_reg <- inner_join(x = race, y = zipcode_datafull, 
                       by = "ZIP_CODE")
 ```
 
 ```
-## Error in is.data.frame(y): object 'zipcode_data' not found
+## Error in is.data.frame(y): object 'zipcode_datafull' not found
 ```
 
 ```r
@@ -453,13 +499,13 @@ both_reg <- inner_join(x = race_reg, y = sex_reg,
 
 ```r
 both_reg2 <- both_reg %>% 
-  select(ZIP_CODE, total_pop.x, white, black, ai, asian, hawaiian, other, two, count.x, prop_voted.x, male, female)
+  select(ZIP_CODE, total_pop.x, white, black, ai, asian, hawaiian, other, two, count.x, prop_voted.x, male, female, prop_reg.x)
 ```
 
 ```
 ## Error in eval(expr, envir, enclos): object 'both_reg' not found
 ```
-Tiday Race and Sex 
+Tidy Files for Analysis  
 
 ```r
 race_reg2<- race_reg %>% 
@@ -478,40 +524,23 @@ sex_reg2 <- sex_reg %>%
 ```
 ## Error in eval(expr, envir, enclos): object 'sex_reg' not found
 ```
-Math for Graphics 
 
 ```r
- both_reg3 <- both_reg %>% transform( prop_white = white / total_pop.x)
-#What I would have like to have is graphs comparing all voters, to voters registered through OMV, however I could not figure out the OMV pr
-
-ggplot(both_reg3, aes(x= prop_white, y = prop_voted.y)) +
-geom_jitter(aes(color = total_pop.y))+
-geom_smooth (method = "lm", se = FALSE,color = "darkorchid") 
-
-votor_orgraph <- voter_or %>%
-  group_by(ZIP_CODE) %>%
-  select (DESCRIPTION, ZIP_CODE)
-
-both_reg4 <- inner_join(x = votor_orgraph, y = both_reg3, 
-                      by = "ZIP_CODE")
-
-ggplot(both_reg4, aes(x= prop_white, y = prop_voted.y)) +
-geom_jitter(aes(color = total_pop.y))+
-geom_smooth (method = "lm", se = FALSE,color = "darkorchid") +
-  facet_wrap(~.DESCRIPTION)
-
-
-
-ggplot 
-
-3 types of bar plot (position = stack, dodge, fill) 
+both_regtidy <-inner_join(x = race_reg2, y = sex_reg2, 
+                      by = "ZIP_CODE") 
 ```
 
 ```
-## Error: <text>:24:3: unexpected symbol
-## 23: 
-## 24: 3 types
-##       ^
+## Error in inner_join(x = race_reg2, y = sex_reg2, by = "ZIP_CODE"): object 'race_reg2' not found
+```
+
+```r
+#what varriables do I need, Should I change how the Race and Sex columns are organized?  
+```
+Analysis 
+
+```r
+#I would like to have a percent black, and a percent white ect columns. Then the analysis I can do is- correlation between regisration through MV and percentage white. Percent vote and race.
 ```
 
 
