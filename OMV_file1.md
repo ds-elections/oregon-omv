@@ -522,7 +522,37 @@ county_reg <- inner_join(x = race_reg, y = sex,
 Analysis 
 
 ```r
-#I would like to have a percent black, and a percent white ect columns. Then the analysis I can do is- correlation between regisration through MV and percentage white. Percent vote and race.
+ ggplot(county_reg, aes(x = p_black, y = prop_reg)) +
+geom_point()+
+  geom_smooth(method=`lm`) 
+```
+
+```
+## Error in ggplot(county_reg, aes(x = p_black, y = prop_reg)): object 'county_reg' not found
+```
+
+```r
+ ggplot(county_reg, aes(x = p_black, y = prop_reg)) +
+geom_point()+
+  geom_smooth(method=`lm`) 
+```
+
+```
+## Error in ggplot(county_reg, aes(x = p_black, y = prop_reg)): object 'county_reg' not found
+```
+
+```r
+ ggplot(county_reg, aes(x = prop_v16, y = prop_reg)) +
+geom_point()+
+  geom_smooth(method=`lm`) 
+```
+
+```
+## Error in ggplot(county_reg, aes(x = prop_v16, y = prop_reg)): object 'county_reg' not found
+```
+
+```r
+#this suggests that the probability of being registered to vote not through OMV, is higher for counties with both higher black and white populations. This may be explained by the fact that there are such small percentages of black voters in oregon. 
 ```
 Extra Code 
 
