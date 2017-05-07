@@ -356,12 +356,14 @@ sex <- zipcode %>%
 
 # Just Race
 
+zipcode$p_black <- zipcode$black / zipcode$total_pop
+zipcode$p_white <- zipcode$white / zipcode$total_pop
+
 race <- zipcode %>%
-  select(ZIP_CODE, total_pop, white, black, ai, asian, hawaiian, other, two)
+  select(ZIP_CODE, total_pop, white, black, ai, asian, hawaiian, other, two, p_black, p_white)
 ```
 
 Get at zip code level for Oregon registered voters
-
 
 ```r
 total_regs <- voter_or %>%
@@ -373,12 +375,22 @@ total_regs <- voter_or %>%
 ## Error in eval(expr, envir, enclos): object 'voter_or' not found
 ```
 
-Proportion of registered that voted on Nov 2016
+Proportion of registered that voted on Nov 2016 and Nov 2012 
 
 ```r
-prop_voted16 <- voter_or %>%
+prop_voted2016 <- voter_or %>%
   group_by(ZIP_CODE) %>%
-  summarize(prop_voted = mean(`11/08/2016` == "YES"))
+  summarize(prop_v16 = mean(`11/08/2016` == "YES"))
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'voter_or' not found
+```
+
+```r
+prop_voted2012 <- voter_or %>%
+  group_by(ZIP_CODE) %>%
+  summarize(prop_v12 = mean(`11/06/2012` == "YES"))
 ```
 
 ```
@@ -448,16 +460,26 @@ Construct data sets with Voter info by Zip Code including, number of registered 
 
 ```r
 zipcode_data <- inner_join(x = total_regs,
-                           y = prop_voted16,
+                           y = prop_voted2016,
                            by = "ZIP_CODE")
 ```
 
 ```
-## Error in inner_join(x = total_regs, y = prop_voted16, by = "ZIP_CODE"): object 'total_regs' not found
+## Error in inner_join(x = total_regs, y = prop_voted2016, by = "ZIP_CODE"): object 'total_regs' not found
 ```
 
 ```r
-zipcode_datafull <- inner_join(x = zipcode_data,
+zipcode_data <- inner_join(x = zipcode_data,
+                           y = prop_voted2012,
+                           by = "ZIP_CODE")
+```
+
+```
+## Error in inner_join(x = zipcode_data, y = prop_voted2012, by = "ZIP_CODE"): object 'zipcode_data' not found
+```
+
+```r
+zipcode_data <- inner_join(x = zipcode_data,
                            y = prop_regcon,
                            by = "ZIP_CODE")
 ```
@@ -468,82 +490,50 @@ zipcode_datafull <- inner_join(x = zipcode_data,
 
 ```r
 # Join sex with voter reg aggregated data
-sex_reg <- inner_join(x = sex, y = zipcode_datafull, 
+sex_reg <- inner_join(x = sex, y = zipcode_data, 
                       by = "ZIP_CODE")
 ```
 
 ```
-## Error in is.data.frame(y): object 'zipcode_datafull' not found
+## Error in is.data.frame(y): object 'zipcode_data' not found
 ```
 
 ```r
 # Join race with voter reg aggregated data
-race_reg <- inner_join(x = race, y = zipcode_datafull, 
+race_reg <- inner_join(x = race, y = zipcode_data, 
                       by = "ZIP_CODE")
 ```
 
 ```
-## Error in is.data.frame(y): object 'zipcode_datafull' not found
+## Error in is.data.frame(y): object 'zipcode_data' not found
 ```
 
 ```r
 # One set with both 
 
-both_reg <- inner_join(x = race_reg, y = sex_reg, 
+county_reg <- inner_join(x = race_reg, y = sex, 
                       by = "ZIP_CODE")
 ```
 
 ```
-## Error in inner_join(x = race_reg, y = sex_reg, by = "ZIP_CODE"): object 'race_reg' not found
+## Error in inner_join(x = race_reg, y = sex, by = "ZIP_CODE"): object 'race_reg' not found
 ```
 
-```r
-both_reg2 <- both_reg %>% 
-  select(ZIP_CODE, total_pop.x, white, black, ai, asian, hawaiian, other, two, count.x, prop_voted.x, male, female, prop_reg.x)
-```
-
-```
-## Error in eval(expr, envir, enclos): object 'both_reg' not found
-```
-Tidy Files for Analysis  
-
-```r
-race_reg2<- race_reg %>% 
-  gather(key="race", value = "number", 3:9)
-```
-
-```
-## Error in eval(expr, envir, enclos): object 'race_reg' not found
-```
-
-```r
-sex_reg2 <- sex_reg %>% 
-  gather(key="sex", value = "number", 3:4)
-```
-
-```
-## Error in eval(expr, envir, enclos): object 'sex_reg' not found
-```
-
-```r
-both_regtidy <-inner_join(x = race_reg2, y = sex_reg2, 
-                      by = "ZIP_CODE") 
-```
-
-```
-## Error in inner_join(x = race_reg2, y = sex_reg2, by = "ZIP_CODE"): object 'race_reg2' not found
-```
-
-```r
-#what varriables do I need, Should I change how the Race and Sex columns are organized?  
-```
 Analysis 
 
 ```r
 #I would like to have a percent black, and a percent white ect columns. Then the analysis I can do is- correlation between regisration through MV and percentage white. Percent vote and race.
 ```
+Extra Code 
 
+```r
+#race_reg2<- race_reg %>% 
+  #gather(key="race", value = "number", 3:9)
 
+#sex_reg2 <- sex_reg %>% 
+ # gather(key="sex", value = "number", 3:4)
 
+#both_regtidy <-inner_join(x = race_reg2, y = sex_reg2, 
+                    #  by = "ZIP_CODE") 
 ```
 
