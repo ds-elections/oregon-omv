@@ -511,6 +511,8 @@ race &lt;- zipcode %&gt;%
 <pre><code>## Error in eval(expr, envir, enclos): object &#39;voter_or&#39; not found
 </code></pre>
 
+<p>Construct Variables for Analysis: </p>
+
 <p>Proportion of registered that voted on Nov 2016 and Nov 2012 </p>
 
 <pre><code class="r">prop_voted2016 &lt;- voter_or %&gt;%
@@ -577,7 +579,7 @@ race &lt;- zipcode %&gt;%
  # summarize(prop_NotMV = mean(`DESCRIPTION` == &quot;Not Registered&quot;))
 </code></pre>
 
-<p>Construct data sets with Voter info by Zip Code including, number of registered voters, how they registered, and the proportion that voted</p>
+<p>Construct data sets for analysis with Voter info by Zip Code including, number of registered voters, how they registered, and the proportion that voted.</p>
 
 <pre><code class="r">zipcode_data &lt;- inner_join(x = total_regs,
                            y = prop_voted2016,
@@ -621,40 +623,201 @@ race_reg &lt;- inner_join(x = race, y = zipcode_data,
 
 <pre><code class="r"># One set with both 
 
-county_reg &lt;- inner_join(x = race_reg, y = sex, 
+zip_reg &lt;- inner_join(x = race_reg, y = sex, 
                       by = &quot;ZIP_CODE&quot;)
 </code></pre>
 
 <pre><code>## Error in inner_join(x = race_reg, y = sex, by = &quot;ZIP_CODE&quot;): object &#39;race_reg&#39; not found
 </code></pre>
 
-<p>Analysis </p>
-
-<pre><code class="r"> ggplot(county_reg, aes(x = p_black, y = prop_reg)) +
-geom_point()+
-  geom_smooth(method=`lm`) 
+<pre><code class="r"># Add Turnout difference 
+require(dplyr)
+require(tidyr)
+mydata = tbl_df(mydata)
 </code></pre>
 
-<pre><code>## Error in ggplot(county_reg, aes(x = p_black, y = prop_reg)): object &#39;county_reg&#39; not found
+<pre><code>## Error in as_data_frame(data): object &#39;mydata&#39; not found
 </code></pre>
 
-<pre><code class="r"> ggplot(county_reg, aes(x = p_black, y = prop_reg)) +
-geom_point()+
-  geom_smooth(method=`lm`) 
+<pre><code class="r">zip_reg &lt;- zip_reg %&gt;%
+mutate (vote_diff = prop_v16 / prop_v12)
 </code></pre>
 
-<pre><code>## Error in ggplot(county_reg, aes(x = p_black, y = prop_reg)): object &#39;county_reg&#39; not found
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;zip_reg&#39; not found
 </code></pre>
 
-<pre><code class="r"> ggplot(county_reg, aes(x = prop_v16, y = prop_reg)) +
-geom_point()+
-  geom_smooth(method=`lm`) 
+<p>Modeling: </p>
+
+<p>Model 1 and 2. Race and Registration</p>
+
+<pre><code class="r"># Modle 1 and 2: Race and Registration Type 
+ ggplot(zip_reg, aes(x = p_black, y = prop_reg)) +
+geom_point(color= &quot;hotpink&quot;)+
+  geom_smooth(method=`lm`, color= &quot;mediumpurple2&quot;) +
+    ggtitle(&quot;Registration Type by Zip Code Blackness&quot;) +
+  labs(x=&quot;Percet Black of Zip Code&quot;,y=&quot;Proportion of Voters Registered Traditionally&quot;)
 </code></pre>
 
-<pre><code>## Error in ggplot(county_reg, aes(x = prop_v16, y = prop_reg)): object &#39;county_reg&#39; not found
+<pre><code>## Error in ggplot(zip_reg, aes(x = p_black, y = prop_reg)): object &#39;zip_reg&#39; not found
+</code></pre>
+
+<pre><code class="r"> ggplot(zip_reg, aes(x = p_white, y = prop_reg)) +
+geom_point(color= &quot;hotpink&quot;)+
+  geom_smooth(method=`lm`, color= &quot;mediumpurple2&quot;) +
+    ggtitle(&quot;Registration Type by Zip Code Whiteness&quot;) +
+  labs(x=&quot;Percet White of Zip Code&quot;,y=&quot;Proportion of Voters Registered Traditionally&quot;)
+</code></pre>
+
+<pre><code>## Error in ggplot(zip_reg, aes(x = p_white, y = prop_reg)): object &#39;zip_reg&#39; not found
+</code></pre>
+
+<pre><code class="r">m1 &lt;- lm(p_white ~ propb_reg, data = zip_reg)
+</code></pre>
+
+<pre><code>## Error in is.data.frame(data): object &#39;zip_reg&#39; not found
+</code></pre>
+
+<pre><code class="r">summary(m1)
+</code></pre>
+
+<pre><code>## Error in summary(m1): object &#39;m1&#39; not found
+</code></pre>
+
+<pre><code class="r">m2 &lt;- lm(p_black ~ prob_reg, data = zip_reg)
+</code></pre>
+
+<pre><code>## Error in is.data.frame(data): object &#39;zip_reg&#39; not found
+</code></pre>
+
+<pre><code class="r">summary(m2)
+</code></pre>
+
+<pre><code>## Error in summary(m2): object &#39;m2&#39; not found
 </code></pre>
 
 <pre><code class="r">#this suggests that the probability of being registered to vote not through OMV, is higher for counties with both higher black and white populations. This may be explained by the fact that there are such small percentages of black voters in oregon. 
+</code></pre>
+
+<p>Models Continued </p>
+
+<pre><code class="r"># Model 3: Registration type and Voter turnout 
+ ggplot(zip_reg, aes(x = prop_reg, y = vote_diff)) +
+geom_point(color= &quot;hotpink&quot;)+
+  geom_smooth(method=`lm`, color= &quot;palegreen&quot;) +
+    ggtitle(&quot;Voting Increase and Registration Type across Zip Code&quot;) +
+  labs(x=&quot;Proportion of Voters Registered Traditionally&quot;,y=&quot;Increase in Turnout for 2016 Election&quot;)+
+   ylim(0, 3)
+</code></pre>
+
+<pre><code>## Error in ggplot(zip_reg, aes(x = prop_reg, y = vote_diff)): object &#39;zip_reg&#39; not found
+</code></pre>
+
+<pre><code class="r">m3 &lt;-lm(vote_diff ~ prop_reg, data = zip_reg)
+</code></pre>
+
+<pre><code>## Error in is.data.frame(data): object &#39;zip_reg&#39; not found
+</code></pre>
+
+<pre><code class="r">summary(m3)
+</code></pre>
+
+<pre><code>## Error in summary(m3): object &#39;m3&#39; not found
+</code></pre>
+
+<pre><code class="r">#Why wont this model work? 
+
+# Model 4: Population and Registration Type 
+ ggplot(zip_reg, aes(x = total_pop.x, y = prop_reg)) +
+geom_point(color= &quot;hotpink&quot;)+
+  geom_smooth(method=`lm`, color= &quot;orange&quot;) +
+    ggtitle(&quot;AVR Prevalance across ZipCode Populaiton&quot;) +
+  labs(x=&quot;ZipCode Population &quot;,y=&quot;Proportion of Voters Registered Traditionally&quot;)
+</code></pre>
+
+<pre><code>## Error in ggplot(zip_reg, aes(x = total_pop.x, y = prop_reg)): object &#39;zip_reg&#39; not found
+</code></pre>
+
+<pre><code class="r">m4 &lt;-lm(total_pop.x ~ prop_reg, data = zip_reg)
+</code></pre>
+
+<pre><code>## Error in is.data.frame(data): object &#39;zip_reg&#39; not found
+</code></pre>
+
+<pre><code class="r">summary(m4)
+</code></pre>
+
+<pre><code>## Error in summary(m4): object &#39;m4&#39; not found
+</code></pre>
+
+<pre><code class="r"># Model 5: population and turnout rate
+ggplot(zip_reg, aes(x = total_pop.x, y = vote_diff)) +
+geom_point(color= &quot;hotpink&quot;)+
+  geom_smooth(method=`lm`, color= &quot;yellowgreen&quot;) +
+    ggtitle(&quot;Turnout Rates by ZipCode Populaiton&quot;) +
+  labs(x=&quot;ZipCode Population &quot;,y=&quot;Change in Turnout Rates from 2012 and 2016 Presidential Election&quot;)+
+   ylim(0, 2)
+</code></pre>
+
+<pre><code>## Error in ggplot(zip_reg, aes(x = total_pop.x, y = vote_diff)): object &#39;zip_reg&#39; not found
+</code></pre>
+
+<pre><code class="r">m5 &lt;-lm(total_pop.x ~ vote_diff, data = zip_reg)
+</code></pre>
+
+<pre><code>## Error in is.data.frame(data): object &#39;zip_reg&#39; not found
+</code></pre>
+
+<pre><code class="r">summary(m5)
+</code></pre>
+
+<pre><code>## Error in summary(m5): object &#39;m5&#39; not found
+</code></pre>
+
+<pre><code class="r"># Model 6 and 7: turnout by race 
+ggplot(zip_reg, aes(x = p_white, y = vote_diff)) +
+geom_point(color= &quot;hotpink&quot;)+
+  geom_smooth(method=`lm`, color= &quot;skyblue1&quot;) +
+    ggtitle(&quot;Turnout Rates by Zipcode Whitness&quot;) +
+  labs(x=&quot;ZipCode Whiteness &quot;,y=&quot;Change in Turnout Rates from 2012 and 2016 Presidential Election&quot;)+
+   ylim(0, 2)
+</code></pre>
+
+<pre><code>## Error in ggplot(zip_reg, aes(x = p_white, y = vote_diff)): object &#39;zip_reg&#39; not found
+</code></pre>
+
+<pre><code class="r">ggplot(zip_reg, aes(x = p_black, y = vote_diff)) +
+geom_point(color= &quot;hotpink&quot;)+
+  geom_smooth(method=`lm`, color= &quot;skyblue1&quot;) +
+    ggtitle(&quot;Turnout Rates by Zipcode Blackness&quot;) +
+  labs(x=&quot;ZipCode Blackness &quot;,y=&quot;Change in Turnout Rates from 2012 and 2016 Presidential Election&quot;)+
+   ylim(0, 2)
+</code></pre>
+
+<pre><code>## Error in ggplot(zip_reg, aes(x = p_black, y = vote_diff)): object &#39;zip_reg&#39; not found
+</code></pre>
+
+<pre><code class="r">m6 &lt;- lm(vote_diff ~ p_white, data = zip_reg)
+</code></pre>
+
+<pre><code>## Error in is.data.frame(data): object &#39;zip_reg&#39; not found
+</code></pre>
+
+<pre><code class="r">summary(m6)
+</code></pre>
+
+<pre><code>## Error in summary(m6): object &#39;m6&#39; not found
+</code></pre>
+
+<pre><code class="r">m7 &lt;- lm(vote_diff ~ p_black, data = zip_reg)
+</code></pre>
+
+<pre><code>## Error in is.data.frame(data): object &#39;zip_reg&#39; not found
+</code></pre>
+
+<pre><code class="r">summary(m7)
+</code></pre>
+
+<pre><code>## Error in summary(m7): object &#39;m7&#39; not found
 </code></pre>
 
 <p>Extra Code </p>
