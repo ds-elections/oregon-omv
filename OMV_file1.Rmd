@@ -208,7 +208,7 @@ geom_point(color= "hotpink")+
     ggtitle("Registration Type by Zip Code Blackness") +
   labs(x="Percent Black of Zip Code",y="Proportion of Voters Registered Traditionally")
 
-m1 <- lm(p_black ~ prop_reg, data = zip_reg2)
+m1 <- lm(p_black ~ prop_OMV, data = zip_reg)
 summary(m1)
  
 # Log Transformation 
@@ -255,13 +255,13 @@ geom_point(color= "mediumpurple2")+
   labs(x="Log Percent White of Zip Code",y="Proportion of Voters Registered by OMV")
 
 #alternative transformaiton 
-ggplot(zip_reg2, aes(x = p_white + I(p_white^2), y = prop_OMV +I(prop_reg^2))) +
+ggplot(zip_reg, aes(x = p_white + I(p_white^2), y = prop_OMV +I(prop_OMV^2))) +
 geom_point(color= "hotpink")+
   geom_smooth(method=`lm`, color= "mediumpurple2") +
     ggtitle("Registration Type by Zip Code Whiteness") +
   labs(x="Percet White of Zip Code",y="Proportion of Voters Registered Traditionally")
 
-ggplot(zip_reg2, aes(x = p_white, y = log(prop_reg))) +
+ggplot(zip_reg, aes(x = p_white, y = log(prop_OMV))) +
 geom_point(color= "hotpink")+
   geom_smooth(method=`lm`, color= "mediumpurple2") +
     ggtitle("Registration Type by Zip Code Whiteness") +
@@ -350,33 +350,6 @@ geom_point(color= "hotpink")+
   labs(x="Zip Code Population",y="Proportion of Voters Registered by OMV")
 
 ```
-
-Extra Code 
-```{r}
-#race_reg2<- race_reg %>% 
-  #gather(key="race", value = "number", 3:9)
-
-#sex_reg2 <- sex_reg %>% 
- # gather(key="sex", value = "number", 3:4)
-
-#both_regtidy <-inner_join(x = race_reg2, y = sex_reg2, 
-                    #  by = "ZIP_CODE") 
-
-#Dont need this any more, also does not work. 
-#votor_or2 <- votor_or %>%
-#  mutate(DESCRIPTION = stringr::str_replace_all(DESCRIPTION, NA, "Not Registered")
-         
-#MV <- voter_or2 %>%
-  #group_by(ZIP_CODE) %>%
-  #summarize(prop_MV = mean(DESCRIPTION != "conventional"))
-  
-  
-      # prop_motorvoter <- voter_or %>%
- # group_by(ZIP_CODE) %>%
- # summarize(prop_NotMV = mean(`DESCRIPTION` == "Not Registered"))
-
-```
-
 
 
 

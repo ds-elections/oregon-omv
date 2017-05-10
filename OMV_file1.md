@@ -222,19 +222,29 @@ geom_point(color= "hotpink")+
 ![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-1.png)
 
 ```r
-m1 <- lm(p_black ~ prop_reg, data = zip_reg2)
-```
-
-```
-## Error in is.data.frame(data): object 'zip_reg2' not found
-```
-
-```r
+m1 <- lm(p_black ~ prop_OMV, data = zip_reg)
 summary(m1)
 ```
 
 ```
-## Error in summary(m1): object 'm1' not found
+## 
+## Call:
+## lm(formula = p_black ~ prop_OMV, data = zip_reg)
+## 
+## Residuals:
+##       Min        1Q    Median        3Q       Max 
+## -0.020441 -0.007321 -0.004083  0.000065  0.185556 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)  0.022570   0.003702   6.096 2.55e-09 ***
+## prop_OMV    -0.146928   0.037348  -3.934 9.84e-05 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.02099 on 403 degrees of freedom
+## Multiple R-squared:  0.03698,	Adjusted R-squared:  0.03459 
+## F-statistic: 15.48 on 1 and 403 DF,  p-value: 9.835e-05
 ```
 
 ```r
@@ -326,28 +336,24 @@ geom_point(color= "mediumpurple2")+
 
 ```r
 #alternative transformaiton 
-ggplot(zip_reg2, aes(x = p_white + I(p_white^2), y = prop_OMV +I(prop_reg^2))) +
+ggplot(zip_reg, aes(x = p_white + I(p_white^2), y = prop_OMV +I(prop_OMV^2))) +
 geom_point(color= "hotpink")+
   geom_smooth(method=`lm`, color= "mediumpurple2") +
     ggtitle("Registration Type by Zip Code Whiteness") +
   labs(x="Percet White of Zip Code",y="Proportion of Voters Registered Traditionally")
 ```
 
-```
-## Error in ggplot(zip_reg2, aes(x = p_white + I(p_white^2), y = prop_OMV + : object 'zip_reg2' not found
-```
+![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-7.png)
 
 ```r
-ggplot(zip_reg2, aes(x = p_white, y = log(prop_reg))) +
+ggplot(zip_reg, aes(x = p_white, y = log(prop_OMV))) +
 geom_point(color= "hotpink")+
   geom_smooth(method=`lm`, color= "mediumpurple2") +
     ggtitle("Registration Type by Zip Code Whiteness") +
   labs(x="Percet White of Zip Code",y="Log Proportion of Voters Registered Traditionally")
 ```
 
-```
-## Error in ggplot(zip_reg2, aes(x = p_white, y = log(prop_reg))): object 'zip_reg2' not found
-```
+![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-8.png)
 
 ```r
 m2 <- lm(log(p_white) ~ prop_OMV, data = zip_reg)
@@ -548,33 +554,6 @@ geom_point(color= "hotpink")+
 ```
 
 ![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13-2.png)
-
-Extra Code 
-
-```r
-#race_reg2<- race_reg %>% 
-  #gather(key="race", value = "number", 3:9)
-
-#sex_reg2 <- sex_reg %>% 
- # gather(key="sex", value = "number", 3:4)
-
-#both_regtidy <-inner_join(x = race_reg2, y = sex_reg2, 
-                    #  by = "ZIP_CODE") 
-
-#Dont need this any more, also does not work. 
-#votor_or2 <- votor_or %>%
-#  mutate(DESCRIPTION = stringr::str_replace_all(DESCRIPTION, NA, "Not Registered")
-         
-#MV <- voter_or2 %>%
-  #group_by(ZIP_CODE) %>%
-  #summarize(prop_MV = mean(DESCRIPTION != "conventional"))
-  
-  
-      # prop_motorvoter <- voter_or %>%
- # group_by(ZIP_CODE) %>%
- # summarize(prop_NotMV = mean(`DESCRIPTION` == "Not Registered"))
-```
-
 
 
 
