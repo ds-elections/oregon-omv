@@ -9,9 +9,6 @@ Load Packages
 ```{r warning=FALSE, message=FALSE}
 library(tidyverse)
 library(lubridate)
-library(tidyverse)
-library(stringr)
-library(tidyr)
 # Set chunk options
 knitr::opts_chunk$set(warning=FALSE, message=FALSE)
 ```
@@ -26,11 +23,11 @@ vote_motor <- read_csv("http://bit.ly/2lCadlB")
 
 #These are the files with correct voting turnout data, however they are still missing registration type, which I join from the data used in Home Work 1. 
 #file.choose()
-voter1 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD1_VoterHistory_Jan2017.txt")
-voter2 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD2_VoterHistory_Jan2017.txt")
-voter3 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD3_VoterHistory_Jan2017.txt")
-voter4 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD4_VoterHistory_Jan2017.txt")
-voter5 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD5_VoterHistory_Jan2017.txt")
+voter1 <- read_tsv("../data-raw/or_voter_history/CD1_VoterHistory_Jan2017.txt")
+voter2 <- read_tsv("../data-raw/or_voter_history/CD2_VoterHistory_Jan2017.txt")
+voter3 <- read_tsv("../data-raw/or_voter_history/CD3_VoterHistory_Jan2017.txt")
+voter4 <- read_tsv("../data-raw/or_voter_history/CD4_VoterHistory_Jan2017.txt")
+voter5 <- read_tsv("../data-raw/or_voter_history/CD5_VoterHistory_Jan2017.txt")
 
 voter_all <- rbind(voter1, voter2, voter3, voter4, voter5)
 
