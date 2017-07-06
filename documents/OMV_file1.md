@@ -1,37 +1,35 @@
----
-title: "OMV file 1"
-author: "RosaKalish"
-output: github_document
----
+OMV file 1
+================
+RosaKalish
 
 Load Packages
 
-
-```r
+``` r
 library(tidyverse)
 library(lubridate)
-library(tidyverse)
 library(stringr)
-library(tidyr)
 # Set chunk options
 knitr::opts_chunk$set(warning=FALSE, message=FALSE)
 ```
 
-Import and Bind Voter Data 
+Import and Bind Voter Data
 
+``` r
+#vote_particip <- read_csv("http://bit.ly/2kG37yJ")
+vote_motor <- read_csv("http://bit.ly/2lCadlB")
+```
 
-```r
+``` r
 #vote_particip <- read_csv("http://bit.ly/2kG37yJ")
 vote_motor <- read_csv("http://bit.ly/2lCadlB")
 
-
 #These are the files with correct voting turnout data, however they are still missing registration type, which I join from the data used in Home Work 1. 
 #file.choose()
-voter1 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD1_VoterHistory_Jan2017.txt")
-voter2 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD2_VoterHistory_Jan2017.txt")
-voter3 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD3_VoterHistory_Jan2017.txt")
-voter4 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD4_VoterHistory_Jan2017.txt")
-voter5 <- read_tsv("/Users/rosa/Desktop/or_voter_history/CD5_VoterHistory_Jan2017.txt")
+voter1 <- read_tsv("../data-raw/or_voter_history/CD1_VoterHistory_Jan2017.txt")
+voter2 <- read_tsv("../data-raw/or_voter_history/CD2_VoterHistory_Jan2017.txt")
+voter3 <- read_tsv("../data-raw/or_voter_history/CD3_VoterHistory_Jan2017.txt")
+voter4 <- read_tsv("../data-raw/or_voter_history/CD4_VoterHistory_Jan2017.txt")
+voter5 <- read_tsv("../data-raw/or_voter_history/CD5_VoterHistory_Jan2017.txt")
 
 voter_all <- rbind(voter1, voter2, voter3, voter4, voter5)
 
@@ -41,18 +39,16 @@ voter_all <- rbind(voter1, voter2, voter3, voter4, voter5)
 voter_all2 <- left_join(x = voter_all,y = vote_motor, by = "VOTER_ID")
 ```
 
-Tidy Vote File 
+Tidy Vote File
 
-
-```r
+``` r
 voter_or <- voter_all2 %>%
   select(VOTER_ID, FIRST_NAME, LAST_NAME, COUNTY.x, CITY, BIRTH_DATE, STATUS, PARTY_CODE, PRECINCT_NAME, PRECINCT, ZIP_CODE, `11/08/2016`, DESCRIPTION, `11/06/2012`, `11/04/2008`)
 ```
 
 Import Geographic Data
 
-
-```r
+``` r
 #I first import Census tract data, then State Legislative district, then County. I finally import Zip Code which I use for this project. However, while the others are from the 2015 community report, the Zip Code data comes from the 2010 election, so there is not perfect demographic information. 
 #file.choose()
 #census <- read_csv("/Users/rosa/Desktop/SEcensus.csv")
@@ -64,13 +60,12 @@ Import Geographic Data
 #county <- read_csv("/Users/rosa/Desktop/SEcounty.csv")
 
 #file.choose()
-zipcode <- read_csv("/Users/rosa/Desktop/zipcode.csv")
+zipcode <- read_csv("../data-raw/zipcode.csv")
 ```
 
-Tidy Geographic Data 
+Tidy Geographic Data
 
-
-```r
+``` r
 zipcode <- zipcode %>%
   mutate(Geo_NAME = str_replace_all(Geo_NAME, pattern = "ZCTA5 ", replacement = ""))
 
@@ -110,19 +105,18 @@ race <- zipcode %>%
 
 Get at zip code level for Oregon registered voters
 
-
-```r
+``` r
 total_regs <- voter_or %>%
   group_by(ZIP_CODE) %>%
   summarize(count = n())
+save(total_regs, file = "../data/total_regs.rda")
 ```
 
-Construct Variables for Analysis: 
+Construct Variables for Analysis:
 
-Proportion of registered that voted on Nov 2016 and Nov 2012 
+Proportion of registered that voted on Nov 2016 and Nov 2012
 
-
-```r
+``` r
 prop_voted2016 <- voter_or %>%
   group_by(ZIP_CODE) %>%
   summarize(prop_v16 = mean(`11/08/2016` == "YES"))
@@ -132,24 +126,15 @@ prop_voted2012 <- voter_or %>%
   summarize(prop_v12 = mean(`11/06/2012` == "YES"))
 ```
 
-Proportion that are not Motor Voter Registered 
+Proportion that are not Motor Voter Registered
 
-
-```r
+``` r
 a <- (is.na(voter_or$DESCRIPTION))
 voter_or$DESCRIPTION[a] <- "conventional"
 voter_or$DESCRIPTION <- as.factor(voter_or$DESCRIPTION)
 
 table(voter_or$DESCRIPTION)
-```
 
-```
-## 
-## conventional  Motor Voter     MVPhase2 
-##      2744872       151711       111645
-```
-
-```r
 prop_regcon <- voter_or %>%
   group_by(ZIP_CODE) %>%
   summarize(prop_reg = mean(DESCRIPTION == "conventional"))
@@ -161,8 +146,7 @@ prop_regOMV <- voter_or %>%
 
 Construct data sets for analysis with Voter info by Zip Code including, number of registered voters, how they registered, and the proportion that voted.
 
-
-```r
+``` r
 zipcode_data <- inner_join(x = total_regs,
                            y = prop_voted2016,
                            by = "ZIP_CODE")
@@ -188,27 +172,25 @@ zip_reg <- inner_join(x = race_reg, y = sex,
                       by = "ZIP_CODE")
 
 # Add Turnout difference 
-require(dplyr)
-require(tidyr)
 
 zip_reg <- zip_reg %>%
 mutate (vote_diff = prop_v16 / prop_v12)
+save(zip_reg, file = "../data/zip_reg.rda")
 ```
 
-Filter Outliers and Zips under 50 people 
+Filter Outliers and Zips under 50 people
 
-
-```r
+``` r
+load("../data/zip_reg.rda")
 zip_reg <- filter(zip_reg, total_pop.x > 50)
 zip_reg <- filter(zip_reg, p_white > .25)
 ```
 
-Modeling: 
+Modeling:
 
 Model 1 and 2. Race and Registration
 
-
-```r
+``` r
 # Model 1 and 2: Race and Registration Type 
 
 # Model 1, Blackness 
@@ -219,97 +201,93 @@ geom_point(color= "hotpink")+
   labs(x="Percent Black of Zip Code",y="Proportion of Voters Registered Traditionally")
 ```
 
-![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-1.png)
+![](OMV_file1_files/figure-markdown_github/unnamed-chunk-12-1.png)
 
-```r
+``` r
 m1 <- lm(p_black ~ prop_OMV, data = zip_reg)
 summary(m1)
 ```
 
-```
-## 
-## Call:
-## lm(formula = p_black ~ prop_OMV, data = zip_reg)
-## 
-## Residuals:
-##       Min        1Q    Median        3Q       Max 
-## -0.020441 -0.007321 -0.004083  0.000065  0.185556 
-## 
-## Coefficients:
-##              Estimate Std. Error t value Pr(>|t|)    
-## (Intercept)  0.022570   0.003702   6.096 2.55e-09 ***
-## prop_OMV    -0.146928   0.037348  -3.934 9.84e-05 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Residual standard error: 0.02099 on 403 degrees of freedom
-## Multiple R-squared:  0.03698,	Adjusted R-squared:  0.03459 
-## F-statistic: 15.48 on 1 and 403 DF,  p-value: 9.835e-05
-```
+    ## 
+    ## Call:
+    ## lm(formula = p_black ~ prop_OMV, data = zip_reg)
+    ## 
+    ## Residuals:
+    ##       Min        1Q    Median        3Q       Max 
+    ## -0.019265 -0.007192 -0.003955  0.000190  0.186276 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)  0.021217   0.003366   6.303 7.47e-10 ***
+    ## prop_OMV    -0.134637   0.034061  -3.953 9.08e-05 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 0.02075 on 415 degrees of freedom
+    ## Multiple R-squared:  0.03628,    Adjusted R-squared:  0.03396 
+    ## F-statistic: 15.62 on 1 and 415 DF,  p-value: 9.079e-05
 
-```r
+``` r
 # Log Transformation 
 ggplot(zip_reg, aes(x = log(p_black +.005), y = prop_OMV)) +
 geom_point(color= "mediumpurple2")+
   geom_smooth(method=`lm`, color= "hotpink") +
     ggtitle("Registration Type by Zip Code Blackness") +
-  labs(x="Log Percet Black of Zip Code",y="Proportion of Voters Registered by OMV")
+  labs(x="Log Percent Black of Zip Code",y="Proportion of Voters Registered by OMV")
 ```
 
-![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-2.png)
+![](OMV_file1_files/figure-markdown_github/unnamed-chunk-12-2.png)
 
-```r
+``` r
 #log both 
 ggplot(zip_reg, aes(x = log(p_black), y = log(prop_OMV))) +
 geom_point(color= "hotpink")+
   geom_smooth(method=`lm`, color= "mediumpurple2") +
     ggtitle("Registration Type by Zip Code Blackness") +
-  labs(x="Log Percet Black of Zip Code",y="Log Proportion of Voters Registered Traditionally")
+  labs(x="Log Percent Black of Zip Code",y="Log Proportion of Voters Registered Traditionally")
 ```
 
-![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-3.png)
+![](OMV_file1_files/figure-markdown_github/unnamed-chunk-12-3.png)
 
-```r
+``` r
 #Alternative transformation
 
 ggplot(zip_reg, aes(x = p_black +I(p_black^2), y = prop_OMV)) +
 geom_point(color= "hotpink")+
   geom_smooth(method=`lm`, color= "mediumpurple2") +
     ggtitle("Registration Type by Zip Code Blackness") +
-  labs(x="Log Percet Black of Zip Code",y="Proportion of Voters Registered Traditionally")
+  labs(x="Log Percent Black of Zip Code",y="Proportion of Voters Registered Traditionally")
 ```
 
-![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-4.png)
+![](OMV_file1_files/figure-markdown_github/unnamed-chunk-12-4.png)
 
-```r
+``` r
 # Linear Model 
 
 m1b <- lm(log(p_black +.005) ~ prop_OMV, data = zip_reg)
 summary(m1b)
 ```
 
-```
-## 
-## Call:
-## lm(formula = log(p_black + 0.005) ~ prop_OMV, data = zip_reg)
-## 
-## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -0.9602 -0.4564 -0.1170  0.2602  2.8995 
-## 
-## Coefficients:
-##             Estimate Std. Error t value Pr(>|t|)    
-## (Intercept)  -4.2821     0.1161 -36.873  < 2e-16 ***
-## prop_OMV     -3.8683     1.1714  -3.302  0.00104 ** 
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Residual standard error: 0.6583 on 403 degrees of freedom
-## Multiple R-squared:  0.02635,	Adjusted R-squared:  0.02393 
-## F-statistic:  10.9 on 1 and 403 DF,  p-value: 0.001045
-```
+    ## 
+    ## Call:
+    ## lm(formula = log(p_black + 0.005) ~ prop_OMV, data = zip_reg)
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -0.9778 -0.4602 -0.1183  0.2712  2.8927 
+    ## 
+    ## Coefficients:
+    ##             Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)  -4.2602     0.1064 -40.050  < 2e-16 ***
+    ## prop_OMV     -4.1604     1.0764  -3.865 0.000129 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 0.6556 on 415 degrees of freedom
+    ## Multiple R-squared:  0.03475,    Adjusted R-squared:  0.03242 
+    ## F-statistic: 14.94 on 1 and 415 DF,  p-value: 0.0001288
 
-```r
+``` r
 # -3.22 with p value of .004 
 
 # Model 2  Whiteness 
@@ -318,12 +296,12 @@ summary(m1b)
 geom_point(color= "hotpink")+
   geom_smooth(method=`lm`, color= "mediumpurple2") +
     ggtitle("Registration Type by Zip Code Whiteness") +
-  labs(x="Percet White of Zip Code",y="Proportion of Voters Registered Traditionally")
+  labs(x="Percent White of Zip Code",y="Proportion of Voters Registered Traditionally")
 ```
 
-![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-5.png)
+![](OMV_file1_files/figure-markdown_github/unnamed-chunk-12-5.png)
 
-```r
+``` r
 #transformation
 ggplot(zip_reg, aes(x = log(p_white), y = prop_OMV)) +
 geom_point(color= "mediumpurple2")+
@@ -332,63 +310,60 @@ geom_point(color= "mediumpurple2")+
   labs(x="Log Percent White of Zip Code",y="Proportion of Voters Registered by OMV")
 ```
 
-![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-6.png)
+![](OMV_file1_files/figure-markdown_github/unnamed-chunk-12-6.png)
 
-```r
+``` r
 #alternative transformaiton 
 ggplot(zip_reg, aes(x = p_white + I(p_white^2), y = prop_OMV +I(prop_OMV^2))) +
 geom_point(color= "hotpink")+
   geom_smooth(method=`lm`, color= "mediumpurple2") +
     ggtitle("Registration Type by Zip Code Whiteness") +
-  labs(x="Percet White of Zip Code",y="Proportion of Voters Registered Traditionally")
+  labs(x="Percent White of Zip Code",y="Proportion of Voters Registered Traditionally")
 ```
 
-![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-7.png)
+![](OMV_file1_files/figure-markdown_github/unnamed-chunk-12-7.png)
 
-```r
+``` r
 ggplot(zip_reg, aes(x = p_white, y = log(prop_OMV))) +
 geom_point(color= "hotpink")+
   geom_smooth(method=`lm`, color= "mediumpurple2") +
     ggtitle("Registration Type by Zip Code Whiteness") +
-  labs(x="Percet White of Zip Code",y="Log Proportion of Voters Registered Traditionally")
+  labs(x="Percent White of Zip Code",y="Log Proportion of Voters Registered Traditionally")
 ```
 
-![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-8.png)
+![](OMV_file1_files/figure-markdown_github/unnamed-chunk-12-8.png)
 
-```r
+``` r
 m2 <- lm(log(p_white) ~ prop_OMV, data = zip_reg)
 summary(m2)
 ```
 
-```
-## 
-## Call:
-## lm(formula = log(p_white) ~ prop_OMV, data = zip_reg)
-## 
-## Residuals:
-##      Min       1Q   Median       3Q      Max 
-## -0.41043 -0.02704  0.03624  0.05998  0.15651 
-## 
-## Coefficients:
-##             Estimate Std. Error t value Pr(>|t|)    
-## (Intercept) -0.06242    0.01687   -3.70 0.000245 ***
-## prop_OMV    -0.65858    0.17016   -3.87 0.000127 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Residual standard error: 0.09562 on 403 degrees of freedom
-## Multiple R-squared:  0.03584,	Adjusted R-squared:  0.03345 
-## F-statistic: 14.98 on 1 and 403 DF,  p-value: 0.0001267
-```
+    ## 
+    ## Call:
+    ## lm(formula = log(p_white) ~ prop_OMV, data = zip_reg)
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -1.20692 -0.02051  0.04230  0.06378  0.13439 
+    ## 
+    ## Coefficients:
+    ##             Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept) -0.13774    0.02085  -6.605 1.22e-10 ***
+    ## prop_OMV     0.06808    0.21102   0.323    0.747    
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 0.1285 on 415 degrees of freedom
+    ## Multiple R-squared:  0.0002507,  Adjusted R-squared:  -0.002158 
+    ## F-statistic: 0.1041 on 1 and 415 DF,  p-value: 0.7472
 
-```r
+``` r
 # -1.28 with P Value of  0.00 
 ```
 
-Models Continued 
+Models Continued
 
-
-```r
+``` r
 # Model 3: Registration type and Voter turnout 
  ggplot(zip_reg, aes(x = prop_OMV, y = vote_diff)) +
 geom_point(color= "hotpink")+
@@ -398,9 +373,9 @@ geom_point(color= "hotpink")+
    ylim(0, 3)
 ```
 
-![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12-1.png)
+![](OMV_file1_files/figure-markdown_github/unnamed-chunk-13-1.png)
 
-```r
+``` r
 #m3 <-lm vote_diff ~ prop_OMV, data = zip_reg)
 #summary(m3)
 
@@ -413,35 +388,33 @@ geom_point(color= "hotpink")+
   labs(x="ZipCode Population ",y="Proportion of Voters Registered Automatically")
 ```
 
-![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12-2.png)
+![](OMV_file1_files/figure-markdown_github/unnamed-chunk-13-2.png)
 
-```r
+``` r
 m4 <-lm(total_pop.x ~ prop_OMV, data = zip_reg)
 summary(m4)
 ```
 
-```
-## 
-## Call:
-## lm(formula = total_pop.x ~ prop_OMV, data = zip_reg)
-## 
-## Residuals:
-##    Min     1Q Median     3Q    Max 
-## -15625  -8591  -5969   3668  56202 
-## 
-## Coefficients:
-##             Estimate Std. Error t value Pr(>|t|)    
-## (Intercept)    15718       2348   6.694 7.29e-11 ***
-## prop_OMV      -65946      23685  -2.784  0.00562 ** 
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Residual standard error: 13310 on 403 degrees of freedom
-## Multiple R-squared:  0.01887,	Adjusted R-squared:  0.01644 
-## F-statistic: 7.752 on 1 and 403 DF,  p-value: 0.005617
-```
+    ## 
+    ## Call:
+    ## lm(formula = total_pop.x ~ prop_OMV, data = zip_reg)
+    ## 
+    ## Residuals:
+    ##    Min     1Q Median     3Q    Max 
+    ## -15617  -8491  -5902   3728  56296 
+    ## 
+    ## Coefficients:
+    ##             Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)    15710       2165   7.258 1.95e-12 ***
+    ## prop_OMV      -67094      21903  -3.063  0.00233 ** 
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 13340 on 415 degrees of freedom
+    ## Multiple R-squared:  0.02211,    Adjusted R-squared:  0.01975 
+    ## F-statistic: 9.383 on 1 and 415 DF,  p-value: 0.002333
 
-```r
+``` r
 # -52383 P value = .017 
 
 # Model 5: population and turnout rate
@@ -453,9 +426,9 @@ geom_point(color= "hotpink")+
    ylim(0, 2)
 ```
 
-![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12-3.png)
+![](OMV_file1_files/figure-markdown_github/unnamed-chunk-13-3.png)
 
-```r
+``` r
 #m5 <-lm(total_pop.x ~ vote_diff, data = zip_reg)
 #summary(m5)
 
@@ -468,9 +441,9 @@ geom_point(color= "hotpink")+
    ylim(0, 2)
 ```
 
-![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12-4.png)
+![](OMV_file1_files/figure-markdown_github/unnamed-chunk-13-4.png)
 
-```r
+``` r
 ggplot(zip_reg, aes(x = log(p_black + .005), y = vote_diff)) +
 geom_point(color= "hotpink")+
   geom_smooth(method=`lm`, color= "skyblue1") +
@@ -479,73 +452,66 @@ geom_point(color= "hotpink")+
    ylim(0, 2)
 ```
 
-![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12-5.png)
+![](OMV_file1_files/figure-markdown_github/unnamed-chunk-13-5.png)
 
-```r
+``` r
 m6 <- lm(vote_diff ~ p_white, data = zip_reg)
 summary(m6)
 ```
 
-```
-## 
-## Call:
-## lm(formula = vote_diff ~ p_white, data = zip_reg)
-## 
-## Residuals:
-##     Min      1Q  Median      3Q     Max 
-##  -2.170  -0.454  -0.192  -0.055 139.609 
-## 
-## Coefficients:
-##             Estimate Std. Error t value Pr(>|t|)  
-## (Intercept)    6.929      3.914   1.770   0.0775 .
-## p_white       -5.957      4.399  -1.354   0.1764  
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Residual standard error: 6.979 on 403 degrees of freedom
-## Multiple R-squared:  0.00453,	Adjusted R-squared:  0.00206 
-## F-statistic: 1.834 on 1 and 403 DF,  p-value: 0.1764
-```
+    ## 
+    ## Call:
+    ## lm(formula = vote_diff ~ p_white, data = zip_reg)
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ##  -3.223  -0.419  -0.229  -0.118 139.816 
+    ## 
+    ## Coefficients:
+    ##             Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept)    5.369      3.337   1.609    0.108
+    ## p_white       -4.228      3.760  -1.125    0.261
+    ## 
+    ## Residual standard error: 6.883 on 415 degrees of freedom
+    ## Multiple R-squared:  0.003038,   Adjusted R-squared:  0.0006362 
+    ## F-statistic: 1.265 on 1 and 415 DF,  p-value: 0.2614
 
-```r
+``` r
 m7 <- lm(vote_diff ~ p_black, data = zip_reg)
 summary(m7)
 ```
 
-```
-## 
-## Call:
-## lm(formula = vote_diff ~ p_black, data = zip_reg)
-## 
-## Residuals:
-##     Min      1Q  Median      3Q     Max 
-##  -0.693  -0.416  -0.358  -0.294 140.226 
-## 
-## Coefficients:
-##             Estimate Std. Error t value Pr(>|t|)    
-## (Intercept)   1.6444     0.3747   4.388 1.46e-05 ***
-## p_black       0.4958    16.2919   0.030    0.976    
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Residual standard error: 6.995 on 403 degrees of freedom
-## Multiple R-squared:  2.298e-06,	Adjusted R-squared:  -0.002479 
-## F-statistic: 0.0009261 on 1 and 403 DF,  p-value: 0.9757
-```
+    ## 
+    ## Call:
+    ## lm(formula = vote_diff ~ p_black, data = zip_reg)
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ##  -0.679  -0.403  -0.345  -0.284 140.240 
+    ## 
+    ## Coefficients:
+    ##             Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)   1.6305     0.3642   4.477 9.77e-06 ***
+    ## p_black       0.5243    16.0121   0.033    0.974    
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 6.893 on 415 degrees of freedom
+    ## Multiple R-squared:  2.584e-06,  Adjusted R-squared:  -0.002407 
+    ## F-statistic: 0.001072 on 1 and 415 DF,  p-value: 0.9739
 
-More Plots 
+More Plots
 
-
-```r
+``` r
 ggplot(zip_reg, aes(x = ZIP_CODE, y = p_white)) +
 geom_point(color= "hotpink") +
     ggtitle("Whitness of Oregon Zip Codes") +
   labs(x="Zip Code",y="Percent White")
 ```
 
-![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13-1.png)
+![](OMV_file1_files/figure-markdown_github/unnamed-chunk-14-1.png)
 
-```r
+``` r
  ggplot(zip_reg, aes(x = total_pop.x, y = prop_OMV)) +
 geom_point(color= "hotpink")+
   geom_smooth(method=`lm`, color= "palegreen") +
@@ -553,7 +519,4 @@ geom_point(color= "hotpink")+
   labs(x="Zip Code Population",y="Proportion of Voters Registered by OMV")
 ```
 
-![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13-2.png)
-
-
-
+![](OMV_file1_files/figure-markdown_github/unnamed-chunk-14-2.png)
