@@ -1,3 +1,5 @@
 .Rproj.user
 .Rhistory
-
+*.Rproj
+*or_voter_history*
+*.DS_Store
