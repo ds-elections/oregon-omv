@@ -201,7 +201,7 @@ geom_point(color= "hotpink")+
   labs(x="Percent Black of Zip Code",y="Proportion of Voters Registered Traditionally")
 ```
 
-![](OMV_file1_files/figure-markdown_github/unnamed-chunk-12-1.png)
+![](OMV_file1_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-12-1.png)
 
 ``` r
 m1 <- lm(p_black ~ prop_OMV, data = zip_reg)
@@ -236,7 +236,7 @@ geom_point(color= "mediumpurple2")+
   labs(x="Log Percent Black of Zip Code",y="Proportion of Voters Registered by OMV")
 ```
 
-![](OMV_file1_files/figure-markdown_github/unnamed-chunk-12-2.png)
+![](OMV_file1_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-12-2.png)
 
 ``` r
 #log both 
@@ -247,7 +247,7 @@ geom_point(color= "hotpink")+
   labs(x="Log Percent Black of Zip Code",y="Log Proportion of Voters Registered Traditionally")
 ```
 
-![](OMV_file1_files/figure-markdown_github/unnamed-chunk-12-3.png)
+![](OMV_file1_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-12-3.png)
 
 ``` r
 #Alternative transformation
@@ -259,7 +259,7 @@ geom_point(color= "hotpink")+
   labs(x="Log Percent Black of Zip Code",y="Proportion of Voters Registered Traditionally")
 ```
 
-![](OMV_file1_files/figure-markdown_github/unnamed-chunk-12-4.png)
+![](OMV_file1_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-12-4.png)
 
 ``` r
 # Linear Model 
@@ -299,7 +299,7 @@ geom_point(color= "hotpink")+
   labs(x="Percent White of Zip Code",y="Proportion of Voters Registered Traditionally")
 ```
 
-![](OMV_file1_files/figure-markdown_github/unnamed-chunk-12-5.png)
+![](OMV_file1_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-12-5.png)
 
 ``` r
 #transformation
@@ -310,7 +310,7 @@ geom_point(color= "mediumpurple2")+
   labs(x="Log Percent White of Zip Code",y="Proportion of Voters Registered by OMV")
 ```
 
-![](OMV_file1_files/figure-markdown_github/unnamed-chunk-12-6.png)
+![](OMV_file1_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-12-6.png)
 
 ``` r
 #alternative transformaiton 
@@ -321,7 +321,7 @@ geom_point(color= "hotpink")+
   labs(x="Percent White of Zip Code",y="Proportion of Voters Registered Traditionally")
 ```
 
-![](OMV_file1_files/figure-markdown_github/unnamed-chunk-12-7.png)
+![](OMV_file1_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-12-7.png)
 
 ``` r
 ggplot(zip_reg, aes(x = p_white, y = log(prop_OMV))) +
@@ -331,7 +331,7 @@ geom_point(color= "hotpink")+
   labs(x="Percent White of Zip Code",y="Log Proportion of Voters Registered Traditionally")
 ```
 
-![](OMV_file1_files/figure-markdown_github/unnamed-chunk-12-8.png)
+![](OMV_file1_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-12-8.png)
 
 ``` r
 m2 <- lm(log(p_white) ~ prop_OMV, data = zip_reg)
@@ -373,7 +373,7 @@ geom_point(color= "hotpink")+
    ylim(0, 3)
 ```
 
-![](OMV_file1_files/figure-markdown_github/unnamed-chunk-13-1.png)
+![](OMV_file1_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-13-1.png)
 
 ``` r
 #m3 <-lm vote_diff ~ prop_OMV, data = zip_reg)
@@ -388,7 +388,7 @@ geom_point(color= "hotpink")+
   labs(x="ZipCode Population ",y="Proportion of Voters Registered Automatically")
 ```
 
-![](OMV_file1_files/figure-markdown_github/unnamed-chunk-13-2.png)
+![](OMV_file1_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-13-2.png)
 
 ``` r
 m4 <-lm(total_pop.x ~ prop_OMV, data = zip_reg)
@@ -426,7 +426,7 @@ geom_point(color= "hotpink")+
    ylim(0, 2)
 ```
 
-![](OMV_file1_files/figure-markdown_github/unnamed-chunk-13-3.png)
+![](OMV_file1_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-13-3.png)
 
 ``` r
 #m5 <-lm(total_pop.x ~ vote_diff, data = zip_reg)
@@ -441,7 +441,7 @@ geom_point(color= "hotpink")+
    ylim(0, 2)
 ```
 
-![](OMV_file1_files/figure-markdown_github/unnamed-chunk-13-4.png)
+![](OMV_file1_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-13-4.png)
 
 ``` r
 ggplot(zip_reg, aes(x = log(p_black + .005), y = vote_diff)) +
@@ -452,7 +452,7 @@ geom_point(color= "hotpink")+
    ylim(0, 2)
 ```
 
-![](OMV_file1_files/figure-markdown_github/unnamed-chunk-13-5.png)
+![](OMV_file1_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-13-5.png)
 
 ``` r
 m6 <- lm(vote_diff ~ p_white, data = zip_reg)
@@ -509,7 +509,7 @@ geom_point(color= "hotpink") +
   labs(x="Zip Code",y="Percent White")
 ```
 
-![](OMV_file1_files/figure-markdown_github/unnamed-chunk-14-1.png)
+![](OMV_file1_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-14-1.png)
 
 ``` r
  ggplot(zip_reg, aes(x = total_pop.x, y = prop_OMV)) +
@@ -519,4 +519,4 @@ geom_point(color= "hotpink")+
   labs(x="Zip Code Population",y="Proportion of Voters Registered by OMV")
 ```
 
-![](OMV_file1_files/figure-markdown_github/unnamed-chunk-14-2.png)
+![](OMV_file1_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-14-2.png)
